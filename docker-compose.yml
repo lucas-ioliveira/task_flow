@@ -1,0 +1,15 @@
+services:
+  taskFlow:
+    container_name: taskFlow_app
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    stdin_open: True
+    tty: True
+    restart: Always
+    port:
+      - "8003:8003"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
