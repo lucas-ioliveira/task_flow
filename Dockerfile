@@ -1,4 +1,4 @@
-FROM python:3.12-rc-slim-buster
+FROM python:3.12-slim-bullseye
 LABEL mantainer="Lucas Oliveira"
 
 WORKDIR /app
@@ -11,9 +11,10 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip 
-RUN pip install -r requirements
+RUN pip install -r requirements.txt
 
 RUN chmod -R 777 /app
-RUN chmod +x /entrypoint.sh
 
-ENTRYPOINT [ "/entrypoint.sh" ]
+RUN chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]

@@ -1,13 +1,13 @@
 services:
-  taskFlow:
-    container_name: taskFlow_app
+  task-flow:
+    container_name: task-flow_app
     build: 
       context: .
       dockerfile: Dockerfile
     stdin_open: True
     tty: True
-    restart: Always
-    port:
+    restart: always
+    ports:
       - "8003:8003"
     volumes:
       - .:/app

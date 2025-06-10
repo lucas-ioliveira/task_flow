@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 echo "Aguardando o banco de bados..."
 sleep 5
