@@ -1,8 +1,35 @@
+from django.contrib import auth
 from django.core.validators import validate_email
 
 from authentication.repository import AuthenticationRepository
 
 class AuthenticationService:
+
+    @staticmethod
+    def login_user(request):
+        response = {
+            "error": False,
+            "message": ""
+        }
+
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        if not all([username, password]):
+            response["error"] = True
+            response["message"] = "Todos os campos são obrigatórios."
+            return response
+
+        user = auth.authenticate(request, username=username, password=password)
+        if not user:
+            response["error"] = True
+            response["message"] = "Usuário ou senha inválidos!"
+            return response
+
+        auth.login(request, user)
+        response["error"] = False
+        response["message"] = "Bem-vindo!"
+        return response
 
     @staticmethod
     def create_user(request):
@@ -22,7 +49,7 @@ class AuthenticationService:
             response["error"] = True
             response["message"] = "Todos os campos são obrigatórios."
             return response
-        
+
         if AuthenticationRepository.get_user_by_username(username):
             response["error"] = True
             response["message"] = "Nome de usuário indisponível!"
