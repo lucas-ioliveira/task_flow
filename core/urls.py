@@ -24,4 +24,5 @@ urlpatterns = [
     path('', CustomLoginView.as_view(), name='login'),
     path('authentication/', include('authentication.urls')),
     path('dashboard/', include('dashboard.urls')),
+    path('workspace/', include('workspace.urls')),
 ]
