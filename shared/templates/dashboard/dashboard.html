@@ -80,9 +80,7 @@
       <div class="row mt-5">
         <div class="d-flex justify-content-between align-items-center w-100">
           <h4>Espaço de trabalho</h4>
-          <button class="btn" 
-            data-bs-toggle="modal" data-bs-target="#modalAddEspacoTrabalho" 
-            style="background-color: #028cc7; color: white" title="Clique para criar um novo espaço de trabalho">
+          <button class="btn" data-bs-toggle="modal" data-bs-target="#modalAddWorkSpace" style="background-color: #028cc7; color: white" title="Clique para criar um novo espaço de trabalho">
             <i class="fas fa-plus"></i>
             <span>Novo espaço de trabalho</span>
           </button>
@@ -102,24 +100,33 @@
                     <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill"><i class="fa-solid fa-eye me-1"></i> Ver</button>
                   </form>
 
-                  <button type="button" class="btn btn-outline-warning btn-sm me-2 rounded-pill" onclick="modalEditarWorkSpace('{{ work.id }}')"><i class="fa-solid fa-pen me-1"></i> Editar</button>
-                  <button type="button" class="btn btn-outline-danger btn-sm me-2 rounded-pill" onclick="modalEditarWorkSpace('{{ work.id }}')"><i class="fa-solid fa-trash me-1"></i> Deletar</button>
+                  <button type="button" class="btn btn-outline-warning btn-sm me-2 rounded-pill" onclick="editarWorkSpace('{{ work.id }}')"><i class="fa-solid fa-pen me-1"></i> Editar</button>
+                  <form method="POST"  class="d-inline-flex" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm me-2 rounded-pill" title="Deletar" onclick="confirmDelete(event, {{ work.id }})">
+                        <i class="fa-solid fa-trash"></i>
+                        Deletar
+                    </button>
+                </form>
+                 
                 </div>
               </div>
             </div>
           </div>
+
+          
           {% comment %}
         {% endfor %} {% endcomment %}
       </div>
     </div>
   </main>
 
-  <div class="modal fade" id="modalAddEspacoTrabalho" tabindex="-1" aria-labelledby="modalAddEspacoTrabalhoLabel" aria-hidden="true">
+  <div class="modal fade" id="modalAddWorkSpace" tabindex="-1" aria-labelledby="modalAddEspacoTrabalhoLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content shadow-lg border-0 rounded-4">
-        <div class="modal-header bg-primary text-white p-4 rounded-top-4">
-          <h5 class="modal-title fw-bold" id="modalAddEspacoTrabalhoLabel">Criar Espaço de Trabalho</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+          <h5 class="modal-title fw-bold text-secondary" id="modalAddEspacoTrabalhoLabel">Criar Espaço de Trabalho</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
         <div class="modal-body p-4">
@@ -139,4 +146,65 @@
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="modalEditarWorkSpace" tabindex="-1" aria-labelledby="modalAddEspacoTrabalhoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content shadow-lg border-0 rounded-4">
+        <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+          <h5 class="modal-title fw-bold text-secondary" id="modalAddEspacoTrabalhoLabel">Editar Espaço de Trabalho</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <form id="formEditarWorkSpace" method="post" action="">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="id_titulo" class="form-label fw-semibold">Título do Espaço de Trabalho:</label>
+              <input type="text" class="form-control form-control-lg" id="id_titulo" name="titulo" placeholder="Ex: Projeto X, Tarefas Diárias, etc." required />
+            </div>
+
+            <div class="modal-footer px-0 pb-0 pt-4 border-top-0">
+              <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-primary px-4">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function editarWorkSpace(id) {
+        const formEditarWorkSpace = document.getElementById('formEditarWorkSpace');
+        formEditarWorkSpace.action = `/dashboard/work_space/${id}/editar/`;
+
+        const modalElement = document.getElementById('modalEditarWorkSpace');
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    }
+
+    function confirmDelete(event, work_space_id) {
+        event.preventDefault();
+
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: "Você realmente deseja excluir este espaço de trabalho?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sim, excluir!',
+            cancelButtonText: 'Cancelar',
+            customClass: {
+                confirmButton: 'btn btn-danger order-2',
+                cancelButton: 'btn btn-secondary order-1 me-2'
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = event.target.closest('form');
+                form.action = `/tarefas/espaco-trabalho/deletar/${work_space_id}/`;
+                form.submit();
+            }
+        });
+    }
+  </script>
 {% endblock %}
