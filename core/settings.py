@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'dashboard',
     'profiles',
     'shared',
+    'workspace',
 ]
 
 MIDDLEWARE = [
