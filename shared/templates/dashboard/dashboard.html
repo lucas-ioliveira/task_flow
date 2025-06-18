@@ -26,7 +26,7 @@
               <div class="d-flex align-items-center">
                 <i class="fas fa-tasks fa-3x me-3 opacity-75"></i>
                 <div>
-                  <h5 class="card-title mb-0">Tarefas a realizar</h5>
+                  <h5 class="card-title mb-0">Tarefas à fazer</h5>
                   <div class="display-6 fw-bold">10</div>
                 </div>
               </div>
@@ -40,21 +40,7 @@
               <div class="d-flex align-items-center">
                 <i class="fas fa-hourglass-half fa-3x me-3 opacity-75"></i>
                 <div>
-                  <h5 class="card-title mb-0">Tarefas pendentes</h5>
-                  <div class="display-6 fw-bold">10</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-          <div class="card border-0 shadow-lg h-100 card-gradient-success hover-lift-lg">
-            <div class="card-body text-white">
-              <div class="d-flex align-items-center">
-                <i class="fas fa-check-circle fa-3x me-3 opacity-75"></i>
-                <div>
-                  <h5 class="card-title mb-0">Tarefas concluídas</h5>
+                  <h5 class="card-title mb-0">Tarefas em andamento</h5>
                   <div class="display-6 fw-bold">10</div>
                 </div>
               </div>
@@ -69,6 +55,20 @@
                 <i class="fas fa-pause-circle fa-3x me-3 opacity-75"></i>
                 <div>
                   <h5 class="card-title mb-0">Tarefas pausadas</h5>
+                  <div class="display-6 fw-bold">10</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-0 shadow-lg h-100 card-gradient-success hover-lift-lg">
+            <div class="card-body text-white">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-check-circle fa-3x me-3 opacity-75"></i>
+                <div>
+                  <h5 class="card-title mb-0">Tarefas concluídas</h5>
                   <div class="display-6 fw-bold">10</div>
                 </div>
               </div>
@@ -94,10 +94,12 @@
                 <h5 class="card-title text-center pb-3 mb-0 fw-bold text-truncate border-bottom">{{ work.title }}</h5>
 
                 <div class="mt-auto d-flex justify-content-end pt-3">
-                  <form class="me-2" method="GET" action="">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill"><i class="fa-solid fa-eye me-1"></i> Ver</button>
-                  </form>
+
+                  <a class="btn btn-outline-primary btn-sm me-2 rounded-pill"
+                    href="{% url 'tasks' work.id %}">
+                    <i class="fa-solid fa-eye me-1"></i>
+                    Ver
+                  </a>
 
                   <button type="button" class="btn btn-outline-warning btn-sm me-2 rounded-pill" onclick="editarWorkSpace('{{ work.id }}')"><i class="fa-solid fa-pen me-1"></i> Editar</button>
                   <form method="POST"  class="d-inline-flex" action="">
