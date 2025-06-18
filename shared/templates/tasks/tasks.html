@@ -24,7 +24,7 @@
     <div class="d-flex justify-content-between align-items-center w-100">
         <h1 class="mt-4 mb-4">Kanban - {{ work_space_name }}</h1>
         <button class="btn" data-bs-toggle="modal" 
-            data-bs-target="#modalAddWorkSpace" 
+            data-bs-target="#modalAddTask" 
             style="background-color: #028cc7; color: white" 
             title="Clique para criar uma nova tarefa">
             <i class="fas fa-plus"></i>
@@ -39,38 +39,75 @@
         <!-- Start lane -->
         <div class="col-12 col-lg-3">
           <div class="card mb-3">
-            <div class="card-header card-gradient-primary text-white">
-              <h3 class="card-title h5 mb-1">À fazer</h3>
+            <div class="card-header card-gradient-primary text-white d-flex justify-content-between align-items-center">
+                <h3 class="card-title h5 mb-0">À fazer</h3>
+                <span class="badge bg-white text-primary rounded-pill px-3 py-2 fw-bold fs-6">{{ todo|length }}</span>
             </div>
             <div class="card-body">
-              <div class="tasks" id="backlog">
+              <div class="tasks" style="max-height: 400px; overflow-y: auto; padding-right: 15px;">
                 <!-- Start task -->
-                <div class="card mb-3">
-                  <div class="card-body">
-                    <p class="mb-0">You can move these elements between the containers</p>
-                    <div class="text-right">
-                      <small class="text-muted mb-1 d-inline-block">25%</small>
-                    </div>
-                    <div class="progress" style="height: 5px;">
-                      <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                {% for task in todo %}
+                  <div class="card mb-3">
+                    <div class="card-body">
+                      <div class="text-right mb-3">
+                        {% if task.priority == 'Low' %}
+                          <span class="badge bg-secondary text-white mb-2">
+                            Baixa
+                          </span>
+                          {% elif task.priority == 'Medium' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Media
+                            </span>
+                          {% elif task.priority == 'High' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Alta
+                            </span>
+                          {% elif task.priority == 'Urgent' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Urgente
+                            </span>
+                          {% endif %}
+                      </div>
+                      <p class="mb-5">{{ task.title }}</p>
+                      <hr class="mb-3">
+                      <div class="text-right">
+
+                        <button type="button" 
+                          class="btn btn-outline-primary btn-sm me-2 rounded-pill" 
+                          title="Detalhes"
+                          data-bs-toggle="modal" data-bs-target="#modalDetailTask">
+                          <i class="fa-solid fa-eye me-1"></i>
+                        </button>
+
+                        <form method="POST"  class="d-inline-flex" action="">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
+                            title="Concluir" 
+                            onclick="confirmDelete(event, {{ work.id }})">
+                            <i class="fa-solid fa-check"></i>
+                          </button>
+                        </form>
+
+                        <button type="button" 
+                          class="btn btn-outline-warning btn-sm me-2 rounded-pill"
+                          title="Editar"
+                          onclick="editarWorkSpace('{{ work.id }}')">
+                          <i class="fa-solid fa-pen me-1"></i>
+                        </button>
+
+                        <form method="POST"  class="d-inline-flex" action="">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
+                            title="Deletar" 
+                            onclick="confirmDelete(event, {{ work.id }})">
+                            <i class="fa-solid fa-trash"></i>
+                          </button>
+                        </form>
+
+                      </div>
                     </div>
                   </div>
-                </div>
-                <!-- End task -->
-                <!-- Start task -->
-                <div class="card mb-3">
-                  <img class="card-img-top" src="https://source.unsplash.com/sECcwm6BN8w/400x200" alt="Bootstrap Kanban Board" />
-                  <div class="card-body">
-                    <span class="badge bg-primary text-white mb-2">On hold</span>
-                    <p class="mb-0">Moving them anywhere else isn't quite possible</p>
-                    <div class="text-right">
-                      <small class="text-muted mb-1 d-inline-block">33%</small>
-                    </div>
-                    <div class="progress" style="height: 5px;">
-                      <div class="progress-bar" role="progressbar" style="width: 33%;" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </div>
+                {% endfor %}
                 <!-- End task -->
               </div>
             </div>
@@ -81,37 +118,76 @@
         <!-- Start lane -->
         <div class="col-12 col-lg-3">
           <div class="card mb-3">
-            <div class="card-header card-gradient-warning text-white">
-              <h3 class="card-title h5 mb-1">Em andamento</h3>
+            <div class="card-header card-gradient-warning text-white d-flex justify-content-between align-items-center">
+                <h3 class="card-title h5 mb-0">Em andamento</h3>
+                <span class="badge bg-white text-warning rounded-pill px-3 py-2 fw-bold fs-6">{{ in_progress|length }}</span>
             </div>
             <div class="card-body">
-              <div class="tasks" id="progress">
+              <div class="tasks" style="max-height: 400px; overflow-y: auto; padding-right: 15px;">
                 <!-- Start task -->
-                <div class="card mb-3">
-                  <div class="card-body">
-                    <span class="badge bg-danger text-white mb-2">Bug</span>
-                    <p class="mb-0">Moving them anywhere else isn't quite possible</p>
-                    <div class="text-right">
-                      <small class="text-muted mb-1 d-inline-block">45%</small>
-                    </div>
-                    <div class="progress" style="height: 5px;">
-                      <div class="progress-bar" role="progressbar" style="width: 45%;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                {% for task in in_progress %}
+                  <div class="card mb-3">
+                    <div class="card-body">
+                      <div class="text-right mb-3">
+                        {% if task.priority == 'Low' %}
+                          <span class="badge bg-secondary text-white mb-2">
+                            Baixa
+                          </span>
+                          {% elif task.priority == 'Medium' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Media
+                            </span>
+                          {% elif task.priority == 'High' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Alta
+                            </span>
+                          {% elif task.priority == 'Urgent' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Urgente
+                            </span>
+                          {% endif %}
+                        
+                      </div>
+                      <p class="mb-5">{{ task.title }}</p>
+                      <hr class="mb-3">
+                      <div class="text-right">
+
+                        <button type="button" 
+                          class="btn btn-outline-primary btn-sm me-2 rounded-pill" 
+                          title="Detalhes"
+                          data-bs-toggle="modal" data-bs-target="#modalDetailTask">
+                          <i class="fa-solid fa-eye me-1"></i>
+                        </button>
+
+                        <form method="POST"  class="d-inline-flex" action="">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
+                            title="Concluir" 
+                            onclick="confirmDelete(event, {{ work.id }})">
+                            <i class="fa-solid fa-check"></i>
+                          </button>
+                        </form>
+
+                        <button type="button" 
+                          class="btn btn-outline-warning btn-sm me-2 rounded-pill"
+                          title="Editar"
+                          onclick="editarWorkSpace('{{ work.id }}')">
+                          <i class="fa-solid fa-pen me-1"></i>
+                        </button>
+
+                        <form method="POST"  class="d-inline-flex" action="">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
+                            title="Deletar" 
+                            onclick="confirmDelete(event, {{ work.id }})">
+                            <i class="fa-solid fa-trash"></i>
+                          </button>
+                        </form>
+
+                      </div>
                     </div>
                   </div>
-                </div>
-                <!-- End task -->
-                <!-- Start task -->
-                <div class="card mb-3">
-                  <div class="card-body">
-                    <p class="mb-0">Anything can be moved around. That includes images, links or any other nested elements.</p>
-                    <div class="text-right">
-                      <small class="text-muted mb-1 d-inline-block">75%</small>
-                    </div>
-                    <div class="progress" style="height: 5px;">
-                      <div class="progress-bar" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </div>
+                {% endfor %}
                 <!-- End task -->
               </div>
             </div>
@@ -122,37 +198,75 @@
         <!-- Start lane -->
         <div class="col-12 col-lg-3">
           <div class="card mb-3">
-            <div class="card-header card-gradient-danger text-white">
-              <h3 class="card-title h5 mb-1">Pausadas</h3>
+            <div class="card-header card-gradient-danger text-white d-flex justify-content-between align-items-center">
+                <h3 class="card-title h5 mb-0">Pausadas</h3>
+                <span class="badge bg-white text-danger rounded-pill px-3 py-2 fw-bold fs-6">{{ paused|length }}</span>
             </div>
             <div class="card-body">
-              <div class="tasks" id="progress">
+              <div class="tasks" style="max-height: 400px; overflow-y: auto; padding-right: 15px;">
                 <!-- Start task -->
-                <div class="card mb-3">
-                  <div class="card-body">
-                    <span class="badge bg-danger text-white mb-2">Bug</span>
-                    <p class="mb-0">Moving them anywhere else isn't quite possible</p>
-                    <div class="text-right">
-                      <small class="text-muted mb-1 d-inline-block">45%</small>
-                    </div>
-                    <div class="progress" style="height: 5px;">
-                      <div class="progress-bar" role="progressbar" style="width: 45%;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                {% for task in paused %}
+                  <div class="card mb-3">
+                    <div class="card-body">
+                      <div class="text-right mb-3">
+                        {% if task.priority == 'Low' %}
+                          <span class="badge bg-secondary text-white mb-2">
+                            Baixa
+                          </span>
+                          {% elif task.priority == 'Medium' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Media
+                            </span>
+                          {% elif task.priority == 'High' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Alta
+                            </span>
+                          {% elif task.priority == 'Urgent' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Urgente
+                            </span>
+                          {% endif %}
+                      </div>
+                      <p class="mb-5">{{ task.title }}</p>
+                      <hr class="mb-3">
+                      <div class="text-right">
+
+                        <button type="button" 
+                          class="btn btn-outline-primary btn-sm me-2 rounded-pill" 
+                          title="Detalhes"
+                          data-bs-toggle="modal" data-bs-target="#modalDetailTask">
+                          <i class="fa-solid fa-eye me-1"></i>
+                        </button>
+
+                        <form method="POST"  class="d-inline-flex" action="">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
+                            title="Concluir" 
+                            onclick="confirmDelete(event, {{ work.id }})">
+                            <i class="fa-solid fa-check"></i>
+                          </button>
+                        </form>
+
+                        <button type="button" 
+                          class="btn btn-outline-warning btn-sm me-2 rounded-pill"
+                          title="Editar"
+                          onclick="editarWorkSpace('{{ work.id }}')">
+                          <i class="fa-solid fa-pen me-1"></i>
+                        </button>
+
+                        <form method="POST"  class="d-inline-flex" action="">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
+                            title="Deletar" 
+                            onclick="confirmDelete(event, {{ work.id }})">
+                            <i class="fa-solid fa-trash"></i>
+                          </button>
+                        </form>
+
+                      </div>
                     </div>
                   </div>
-                </div>
-                <!-- End task -->
-                <!-- Start task -->
-                <div class="card mb-3">
-                  <div class="card-body">
-                    <p class="mb-0">Anything can be moved around. That includes images, links or any other nested elements.</p>
-                    <div class="text-right">
-                      <small class="text-muted mb-1 d-inline-block">75%</small>
-                    </div>
-                    <div class="progress" style="height: 5px;">
-                      <div class="progress-bar" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </div>
+                {% endfor %}
                 <!-- End task -->
               </div>
             </div>
@@ -163,38 +277,75 @@
         <!-- Start lane -->
         <div class="col-12 col-lg-3">
           <div class="card mb-3">
-            <div class="card-header card-gradient-success text-white">
-              <h3 class="card-title h5 mb-1">Concluídas</h3>
+            <div class="card-header card-gradient-success text-white d-flex justify-content-between align-items-center">
+                <h3 class="card-title h5 mb-0">Concluídas</h3>
+                <span class="badge bg-white text-success rounded-pill px-3 py-2 fw-bold fs-6">{{ done|length }}</span>
             </div>
             <div class="card-body">
-              <div class="tasks" id="completed">
+              <div class="tasks" style="max-height: 400px; overflow-y: auto; padding-right: 15px;">
                 <!-- Start task -->
-                <div class="card mb-3">
-                  <img class="card-img-top" src="https://source.unsplash.com/zNRITe8NPqY/400x200" alt="Bootstrap Kanban Board" />
-                  <div class="card-body">
-                    <span class="badge bg-warning text-white mb-2">Enhancement</span>
-                    <p class="mb-0">Moving them anywhere else isn't quite possible</p>
-                    <div class="text-right">
-                      <small class="text-muted mb-1 d-inline-block">95%</small>
-                    </div>
-                    <div class="progress" style="height: 5px;">
-                      <div class="progress-bar" role="progressbar" style="width: 95%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                 {% for task in done %}
+                  <div class="card mb-3">
+                    <div class="card-body">
+                      <div class="text-right mb-3">
+                        {% if task.priority == 'Low' %}
+                          <span class="badge bg-secondary text-white mb-2">
+                            Baixa
+                          </span>
+                          {% elif task.priority == 'Medium' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Media
+                            </span>
+                          {% elif task.priority == 'High' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Alta
+                            </span>
+                          {% elif task.priority == 'Urgent' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Urgente
+                            </span>
+                          {% endif %}
+                      </div>
+                      <p class="mb-5">{{ task.title }}</p>
+                      <hr class="mb-3">
+                      <div class="text-right">
+
+                        <button type="button" 
+                          class="btn btn-outline-primary btn-sm me-2 rounded-pill" 
+                          title="Detalhes"
+                          data-bs-toggle="modal" data-bs-target="#modalDetailTask">
+                          <i class="fa-solid fa-eye me-1"></i>
+                        </button>
+
+                        <form method="POST"  class="d-inline-flex" action="">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
+                            title="Concluir" 
+                            onclick="confirmDelete(event, {{ work.id }})">
+                            <i class="fa-solid fa-check"></i>
+                          </button>
+                        </form>
+
+                        <button type="button" 
+                          class="btn btn-outline-warning btn-sm me-2 rounded-pill"
+                          title="Editar"
+                          onclick="editarWorkSpace('{{ work.id }}')">
+                          <i class="fa-solid fa-pen me-1"></i>
+                        </button>
+
+                        <form method="POST"  class="d-inline-flex" action="">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
+                            title="Deletar" 
+                            onclick="confirmDelete(event, {{ work.id }})">
+                            <i class="fa-solid fa-trash"></i>
+                          </button>
+                        </form>
+
+                      </div>
                     </div>
                   </div>
-                </div>
-                <!-- End task -->
-                <!-- Start task -->
-                <div class="card mb-3">
-                  <div class="card-body">
-                    <p class="mb-0">You can move these elements between the containers</p>
-                    <div class="text-right">
-                      <small class="text-muted mb-1 d-inline-block">80%</small>
-                    </div>
-                    <div class="progress" style="height: 5px;">
-                      <div class="progress-bar" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </div>
+                {% endfor %}
                 <!-- End task -->
               </div>
             </div>
@@ -205,7 +356,112 @@
     </div>
   </div>
 
-  <script>
+  <div class="modal fade" id="modalAddTask" tabindex="-1" aria-labelledby="modalAddTaskLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content shadow-lg border-0 rounded-4">
+        <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+          <h5 class="modal-title fw-bold text-secondary">Nova Tarefa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
 
+        <div class="modal-body p-4">
+          <form method="post" action="{% url 'task-create' %}">
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label for="idTitleLabel" class="form-label fw-semibold">Título:</label>
+              <input type="text" class="form-control form-control-lg" id="idTitle" name="title" placeholder="Ex: Projeto X, Tarefas Diárias, etc." required />
+            </div>
+
+            <div class="mb-3">
+              <label for="idTitleLabel" class="form-label fw-semibold">Descrição:</label>
+              <textarea class="form-control form-control-lg" id="idDescription" name="description" placeholder="Ex: Projeto X, Tarefas Diárias, etc."></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="idTitleLabel" class="form-label fw-semibold">Prioridade:</label>
+              <select class="form-select form-select-lg" name="priority" id="idPriority">
+                {% for p in priority %}
+                  <option value="{{p.0}}">{{p.1}}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="idTitleLabel" class="form-label fw-semibold">Status:</label>
+              <select class="form-select form-select-lg" name="status" id="idstatus">
+                {% for s in status %}
+                  <option value="{{s.0}}">{{s.1}}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="idTitleLabel" class="form-label fw-semibold">Espaço de Trabalho:</label>
+              <input type="text" class="form-control form-control-lg" id="idWorkSpace" name="work_space" value="{{work_space_name}}" readonly/>
+              <input type="hidden" class="form-control form-control-lg" name="work_space_id" value="{{work_space_id}}"/>
+            </div>
+
+            <div class="modal-footer px-0 pb-0 pt-4 border-top-0">
+              <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-primary px-4">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalDetailTask" tabindex="-1" aria-labelledby="modalDetailTaskLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content shadow-lg border-0 rounded-4">
+        <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+          <h5 class="modal-title fw-bold text-secondary">Detalhes da Tarefa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+
+          <h4 class="fw-bold mb-3 text-dark">Teste</h4>
+          <p class="text-muted mb-4">{{ task.description|default:"Nenhuma descrição fornecida." }}</p>
+
+          <div class="row mb-3">
+              <div class="col-md-6">
+                  <p class="mb-1 fw-semibold">Prioridade:</p>
+                  <span class="badge bg-secondary p-2 rounded-pill">Teste</span>
+
+              </div>
+              <div class="col-md-6">
+                  <p class="mb-1 fw-semibold">Status:</p>
+                  <span class="badge bg-secondary p-2 rounded-pill">Teste</span>
+              </div>
+          </div>
+
+          <div class=" row mb-3">
+            <div class="col-md-6">
+              <p class="mb-1 fw-semibold">Espaço de Trabalho:</p>
+              <span class="text-muted">Teste</span>
+            </div>
+
+            <div class="col-md-6">
+              <p class="mb-1 fw-semibold">Concluído em:</p>
+              <span class="text-muted">30/12/2022</span>
+            </div>
+          </div>
+
+          <hr class="my-4">
+          <div class="text-end">
+              <p class="text-muted mb-0"><small>Criado em: 30/12/2022</small></p>
+          </div>
+
+          <div class="modal-footer px-0 pb-0 pt-4 border-top-0">
+              <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
   </script>
 {% endblock %}
