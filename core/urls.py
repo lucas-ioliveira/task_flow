@@ -25,4 +25,5 @@ urlpatterns = [
     path('authentication/', include('authentication.urls')),
     path('dashboard/', include('dashboard.urls')),
     path('workspace/', include('workspace.urls')),
+    path('tasks/', include('tasks.urls')),
 ]
