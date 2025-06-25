@@ -36,7 +36,7 @@
     <div class="container py-5">
 
       <div class="row">
-        <!-- Start lane -->
+        <!-- Start Todo -->
         <div class="col-12 col-lg-3">
           <div class="card mb-3">
             <div class="card-header card-gradient-primary text-white d-flex justify-content-between align-items-center">
@@ -75,14 +75,22 @@
                         <button type="button" 
                           class="btn btn-outline-primary btn-sm me-2 rounded-pill" 
                           title="Detalhes"
-                          data-bs-toggle="modal" data-bs-target="#modalDetailTask">
+                          onclick="detalhesTask({
+                              title: '{{ task.title }}',
+                              description: '{{ task.description }}',
+                              priority: '{{ task.priority }}',
+                              status: '{{ task.status }}',
+                              workSpaceTitle: '{{ task.work_space.title }}',
+                              createdAt: '{{ task.created_at }}',
+                              completedAt: '{{ task.completed_at|default:"Não concluído" }}'
+                          })">
                           <i class="fa-solid fa-eye me-1"></i>
                         </button>
 
                         <form method="POST"  class="d-inline-flex" action="">
                           {% csrf_token %}
                           <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
-                            title="Concluir" 
+                            title="Alterar status" 
                             onclick="confirmDelete(event, {{ work.id }})">
                             <i class="fa-solid fa-check"></i>
                           </button>
@@ -113,9 +121,9 @@
             </div>
           </div>
         </div>
-        <!-- End lane -->
+        <!-- End Todo -->
 
-        <!-- Start lane -->
+        <!-- Start In progress -->
         <div class="col-12 col-lg-3">
           <div class="card mb-3">
             <div class="card-header card-gradient-warning text-white d-flex justify-content-between align-items-center">
@@ -155,14 +163,22 @@
                         <button type="button" 
                           class="btn btn-outline-primary btn-sm me-2 rounded-pill" 
                           title="Detalhes"
-                          data-bs-toggle="modal" data-bs-target="#modalDetailTask">
+                          onclick="detalhesTask({
+                              title: '{{ task.title }}',
+                              description: '{{ task.description }}',
+                              priority: '{{ task.priority }}',
+                              status: '{{ task.status }}',
+                              workSpaceTitle: '{{ task.work_space.title }}',
+                              createdAt: '{{ task.created_at }}',
+                              completedAt: '{{ task.completed_at|default:"Não concluído" }}'
+                          })">
                           <i class="fa-solid fa-eye me-1"></i>
                         </button>
 
                         <form method="POST"  class="d-inline-flex" action="">
                           {% csrf_token %}
                           <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
-                            title="Concluir" 
+                            title="Alterar status" 
                             onclick="confirmDelete(event, {{ work.id }})">
                             <i class="fa-solid fa-check"></i>
                           </button>
@@ -193,9 +209,9 @@
             </div>
           </div>
         </div>
-        <!-- End lane -->
+        <!-- End In progress -->
 
-        <!-- Start lane -->
+        <!-- Start Paused -->
         <div class="col-12 col-lg-3">
           <div class="card mb-3">
             <div class="card-header card-gradient-danger text-white d-flex justify-content-between align-items-center">
@@ -234,14 +250,22 @@
                         <button type="button" 
                           class="btn btn-outline-primary btn-sm me-2 rounded-pill" 
                           title="Detalhes"
-                          data-bs-toggle="modal" data-bs-target="#modalDetailTask">
+                          onclick="detalhesTask({
+                              title: '{{ task.title }}',
+                              description: '{{ task.description }}',
+                              priority: '{{ task.priority }}',
+                              status: '{{ task.status }}',
+                              workSpaceTitle: '{{ task.work_space.title }}',
+                              createdAt: '{{ task.created_at }}',
+                              completedAt: '{{ task.completed_at|default:"Não concluído" }}'
+                          })">
                           <i class="fa-solid fa-eye me-1"></i>
                         </button>
 
                         <form method="POST"  class="d-inline-flex" action="">
                           {% csrf_token %}
                           <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
-                            title="Concluir" 
+                            title="Alterar status" 
                             onclick="confirmDelete(event, {{ work.id }})">
                             <i class="fa-solid fa-check"></i>
                           </button>
@@ -272,9 +296,9 @@
             </div>
           </div>
         </div>
-        <!-- End lane -->
+        <!-- End Paused -->
 
-        <!-- Start lane -->
+        <!-- Start Done -->
         <div class="col-12 col-lg-3">
           <div class="card mb-3">
             <div class="card-header card-gradient-success text-white d-flex justify-content-between align-items-center">
@@ -313,14 +337,22 @@
                         <button type="button" 
                           class="btn btn-outline-primary btn-sm me-2 rounded-pill" 
                           title="Detalhes"
-                          data-bs-toggle="modal" data-bs-target="#modalDetailTask">
+                          onclick="detalhesTask({
+                              title: '{{ task.title }}',
+                              description: '{{ task.description }}',
+                              priority: '{{ task.priority }}',
+                              status: '{{ task.status }}',
+                              workSpaceTitle: '{{ task.work_space.title }}',
+                              createdAt: '{{ task.created_at }}',
+                              completedAt: '{{ task.completed_at|default:"Não concluído" }}'
+                          })">
                           <i class="fa-solid fa-eye me-1"></i>
                         </button>
 
                         <form method="POST"  class="d-inline-flex" action="">
                           {% csrf_token %}
                           <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
-                            title="Concluir" 
+                            title="Alterar status" 
                             onclick="confirmDelete(event, {{ work.id }})">
                             <i class="fa-solid fa-check"></i>
                           </button>
@@ -351,7 +383,7 @@
             </div>
           </div>
         </div>
-        <!-- End lane -->
+        <!-- End Done -->
       </div>
     </div>
   </div>
@@ -422,36 +454,37 @@
 
         <div class="modal-body p-4">
 
-          <h4 class="fw-bold mb-3 text-dark">Teste</h4>
-          <p class="text-muted mb-4">{{ task.description|default:"Nenhuma descrição fornecida." }}</p>
+          <h4 id="idTitleDetail" class="fw-bold mb-3 text-dark"></h4>
+          <p id="idDescriptionDetail" class="text-muted mb-4"></p>
 
           <div class="row mb-3">
               <div class="col-md-6">
                   <p class="mb-1 fw-semibold">Prioridade:</p>
-                  <span class="badge bg-secondary p-2 rounded-pill">Teste</span>
+                  <span id="idPriorityDetail" class="badge bg-secondary p-2 rounded-pill"></span>
 
               </div>
               <div class="col-md-6">
                   <p class="mb-1 fw-semibold">Status:</p>
-                  <span class="badge bg-secondary p-2 rounded-pill">Teste</span>
+                  <span id="idStatusDetail" class="badge bg-secondary p-2 rounded-pill"></span>
               </div>
           </div>
 
           <div class=" row mb-3">
             <div class="col-md-6">
               <p class="mb-1 fw-semibold">Espaço de Trabalho:</p>
-              <span class="text-muted">Teste</span>
+              <span id="idWorkSpaceDetail" class="text-muted"></span>
             </div>
 
             <div class="col-md-6">
               <p class="mb-1 fw-semibold">Concluído em:</p>
-              <span class="text-muted">30/12/2022</span>
+              <span id="idDateDetail" class="text-muted"></span>
             </div>
           </div>
 
           <hr class="my-4">
           <div class="text-end">
-              <p class="text-muted mb-0"><small>Criado em: 30/12/2022</small></p>
+              <p class="mb-1 fw-semibold">Criado em:</p>
+              <p id="idCreatedDetail" class="text-muted mb-0"><small></small></p>
           </div>
 
           <div class="modal-footer px-0 pb-0 pt-4 border-top-0">
@@ -463,5 +496,50 @@
   </div>
 
   <script>
+    function detalhesTask(data) {
+      console.log(data);
+      document.getElementById("idTitleDetail").innerHTML = data.title;
+      document.getElementById("idDescriptionDetail").innerHTML = data.description;
+      document.getElementById("idWorkSpaceDetail").innerHTML = data.workSpaceTitle;
+      document.getElementById("idDateDetail").innerHTML = data.completedAt;
+      document.getElementById("idCreatedDetail").innerHTML = data.createdAt;
+      document.getElementById("idPriorityDetail").innerHTML = data.priority;
+
+      if (data.priority == 'Low') {
+        document.getElementById("idPriorityDetail").innerHTML = 'Baixa'
+
+      } else if (data.priority == 'Medium') {
+        document.getElementById("idPriorityDetail").innerHTML = 'Média'
+      
+      } else if (data.priority == 'High') {
+        document.getElementById("idPriorityDetail").innerHTML = 'Alta'
+      
+      } else if (data.priority == 'Urgent') {
+        document.getElementById("idPriorityDetail").innerHTML = 'Urgente'
+        
+      } else {
+        document.getElementById("idPriorityDetail").innerHTML = 'Desconhecido'
+      }
+
+      if (data.status == 'To do') {
+        document.getElementById("idStatusDetail").innerHTML = 'À fazer'
+
+      } else if (data.status == 'In progress') {
+        document.getElementById("idStatusDetail").innerHTML = 'Em andamento'
+      
+      } else if (data.status == 'Done') {
+        document.getElementById("idStatusDetail").innerHTML = 'Concluído'
+      
+      } else if (data.status == 'Paused') {
+        document.getElementById("idStatusDetail").innerHTML = 'Pausado'
+        
+      } else {
+        document.getElementById("idStatusDetail").innerHTML = 'Desconhecido'
+      }
+
+      const modalElement = document.getElementById("modalDetailTask");
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
   </script>
 {% endblock %}
