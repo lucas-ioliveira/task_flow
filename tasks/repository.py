@@ -4,12 +4,15 @@ from tasks.models import Task
 class TaskRepository:
     @staticmethod
     def get_tasks_by_status(work_space_id=None, user=None, status=None):
-        if work_space_id:
-            return Task.objects.filter(
-                work_space_id=work_space_id, user=user, active=True, status=status
-                ).order_by('created_at')
+        try:
+            if work_space_id:
+                return Task.objects.filter(
+                    work_space_id=work_space_id, user=user, active=True, status=status
+                    ).order_by('created_at')
 
-        return Task.objects.filter(user=user, active=True, status=status).order_by('created_at')
+            return Task.objects.filter(user=user, active=True, status=status).order_by('created_at')
+        except Task.DoesNotExist:
+            return None
         
     @staticmethod
     def get_status_choices():
@@ -32,4 +35,16 @@ class TaskRepository:
             )
             return task
         except:
+            return None
+    
+    @staticmethod
+    def update_status_task(id, status, completed_at=None):
+        try:
+            task = Task.objects.get(id=id)
+            task.status = status
+            if completed_at is not None:
+                task.completed_at = completed_at
+            task.save()
+            return task
+        except Task.DoesNotExist:
             return None

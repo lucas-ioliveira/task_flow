@@ -87,14 +87,12 @@
                           <i class="fa-solid fa-eye me-1"></i>
                         </button>
 
-                        <form method="POST"  class="d-inline-flex" action="">
-                          {% csrf_token %}
-                          <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
-                            title="Alterar status" 
-                            onclick="confirmDelete(event, {{ work.id }})">
-                            <i class="fa-solid fa-check"></i>
-                          </button>
-                        </form>
+                        <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
+                          title="Alterar status" 
+                          onclick="updateStatusTask('{{ task.id }}', '{{ task.status }}')">
+                          <i class="fa-solid fa-check"></i>
+                        </button>
+
 
                         <button type="button" 
                           class="btn btn-outline-warning btn-sm me-2 rounded-pill"
@@ -175,14 +173,11 @@
                           <i class="fa-solid fa-eye me-1"></i>
                         </button>
 
-                        <form method="POST"  class="d-inline-flex" action="">
-                          {% csrf_token %}
-                          <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
-                            title="Alterar status" 
-                            onclick="confirmDelete(event, {{ work.id }})">
-                            <i class="fa-solid fa-check"></i>
-                          </button>
-                        </form>
+                        <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
+                          title="Alterar status" 
+                          onclick="updateStatusTask('{{ task.id }}', '{{ task.status }}')">
+                          <i class="fa-solid fa-check"></i>
+                        </button>
 
                         <button type="button" 
                           class="btn btn-outline-warning btn-sm me-2 rounded-pill"
@@ -262,14 +257,11 @@
                           <i class="fa-solid fa-eye me-1"></i>
                         </button>
 
-                        <form method="POST"  class="d-inline-flex" action="">
-                          {% csrf_token %}
-                          <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
-                            title="Alterar status" 
-                            onclick="confirmDelete(event, {{ work.id }})">
-                            <i class="fa-solid fa-check"></i>
-                          </button>
-                        </form>
+                        <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
+                          title="Alterar status" 
+                          onclick="updateStatusTask('{{ task.id }}', '{{ task.status }}')">
+                          <i class="fa-solid fa-check"></i>
+                        </button>
 
                         <button type="button" 
                           class="btn btn-outline-warning btn-sm me-2 rounded-pill"
@@ -349,14 +341,11 @@
                           <i class="fa-solid fa-eye me-1"></i>
                         </button>
 
-                        <form method="POST"  class="d-inline-flex" action="">
-                          {% csrf_token %}
-                          <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
-                            title="Alterar status" 
-                            onclick="confirmDelete(event, {{ work.id }})">
-                            <i class="fa-solid fa-check"></i>
-                          </button>
-                        </form>
+                        <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
+                          title="Alterar status" 
+                          onclick="updateStatusTask('{{ task.id }}', '{{ task.status }}')">
+                          <i class="fa-solid fa-check"></i>
+                        </button>
 
                         <button type="button" 
                           class="btn btn-outline-warning btn-sm me-2 rounded-pill"
@@ -495,6 +484,36 @@
     </div>
   </div>
 
+<div class="modal fade" id="modalUpdateStatusTask" tabindex="-1" aria-labelledby="modalUpdateStatusTaskLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content shadow-lg border-0 rounded-4">
+      <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+        <h5 class="modal-title fw-bold text-secondary" id="modalUpdateStatusTaskLabel">Atualizar status da tarefa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id='formUpdateStatusTask' method="post" action="">
+            {% csrf_token %}
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label for="taskStatusSelect" class="form-label fw-semibold">Selecione o novo status:</label>
+            <select class="form-select" id="taskStatusSelect" name="task_status_update" aria-label="Selecione o status da tarefa">
+              <option selected disabled>Escolha o status...</option>
+              {% for s in status %}
+                <option value="{{s.0}}">{{s.1}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer px-4 pb-4 pt-0 border-top-0 d-flex justify-content-end">
+          <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Fechar</button>
+          <button type="submit" class="btn btn-primary px-4">Salvar Alterações</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
   <script>
     function detalhesTask(data) {
       console.log(data);
@@ -538,6 +557,16 @@
       }
 
       const modalElement = document.getElementById("modalDetailTask");
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+
+    function updateStatusTask(taskId, taskStatus) {
+      document.getElementById("taskStatusSelect").value = taskStatus;
+
+      const formUpdateStatusTask = document.getElementById("formUpdateStatusTask");
+      formUpdateStatusTask.action = `/tasks/${taskId}/update/`;
+      const modalElement = document.getElementById("modalUpdateStatusTask");
       const modal = new bootstrap.Modal(modalElement);
       modal.show();
     }

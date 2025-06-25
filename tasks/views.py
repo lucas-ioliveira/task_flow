@@ -57,3 +57,21 @@ class TaskCreateView(View):
             return redirect(previous_page)
         messages.success(request, 'Tarefa criada com sucesso!')
         return redirect(previous_page)
+
+
+@method_decorator(login_required, name='dispatch')
+class TaskUpdateStatusView(View):
+
+    def post(self, request, task_id):
+        previous_page = request.META.get("HTTP_REFERER")
+        data = {
+            'task_id': task_id,
+            'status': request.POST.get('task_status_update'),
+        }
+        
+        task = TasksServices.update_status_task(data)
+        if not task:
+            messages.error(request, 'Ocorreu um erro ao criar a tarefa!')
+            return redirect(previous_page)
+        messages.success(request, 'Tarefa criada com sucesso!')
+        return redirect(previous_page)
