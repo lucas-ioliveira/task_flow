@@ -97,3 +97,17 @@ class TaskUpdateView(View):
             return redirect(previous_page)
         messages.success(request, 'Tarefa atualizada com sucesso!')
         return redirect(previous_page)
+
+
+@method_decorator(login_required, name='dispatch')
+class TaskUDeleteView(View):
+
+    def post(self, request, task_id):
+        previous_page = request.META.get("HTTP_REFERER")
+        
+        task = TaskRepository.delete_task(task_id)
+        if not task:
+            messages.error(request, 'Ocorreu um erro ao deletar a tarefa!')
+            return redirect(previous_page)
+        messages.success(request, 'Tarefa deletada com sucesso!')
+        return redirect(previous_page)

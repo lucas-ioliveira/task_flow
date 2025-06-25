@@ -63,3 +63,13 @@ class TaskRepository:
             return task
         except Task.DoesNotExist:
             return None
+    
+    @staticmethod
+    def delete_task(id):
+        try:
+            task = Task.objects.get(id=id)
+            task.active = False
+            task.save()
+            return task
+        except Task.DoesNotExist:
+            return None

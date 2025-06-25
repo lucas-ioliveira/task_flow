@@ -7,14 +7,16 @@
 {% endblock %}
 
 {% block style %}
+
   html, body { background: #e9ecef; }
   .card-gradient-primary { background: linear-gradient(45deg, #028cc7, #007bff); } 
   .card-gradient-warning { background: linear-gradient(45deg, #ffc107, #e0a800); } 
   .card-gradient-success { background: linear-gradient(45deg, #28a745, #1e7e34); } 
   .card-gradient-danger { background: linear-gradient(45deg, #dc3545, #bd2130); }
   .cursor-grab { cursor: -webkit-grab; cursor: grab; }
-
   .tasks { min-height: 450px; }
+  .swal2-actions { display: flex; gap: 10px; justify-content: center; }
+
 {% endblock %}
 
 {% block main %}
@@ -107,11 +109,12 @@
                           <i class="fa-solid fa-pen me-1"></i>
                         </button>
 
-                        <form method="POST"  class="d-inline-flex" action="">
+                        <form method="POST"  class="d-inline-flex" action="{% url 'task-delete' task.id %}">
                           {% csrf_token %}
-                          <button type="submit" class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
+                          <button type="submit" 
+                            class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
                             title="Deletar" 
-                            onclick="confirmDelete(event, {{ work.id }})">
+                            onclick="confirmDelete(this)"> 
                             <i class="fa-solid fa-trash"></i>
                           </button>
                         </form>
@@ -198,11 +201,12 @@
                           <i class="fa-solid fa-pen me-1"></i>
                         </button>
 
-                        <form method="POST"  class="d-inline-flex" action="">
+                        <form method="POST"  class="d-inline-flex" action="{% url 'task-delete' task.id %}">
                           {% csrf_token %}
-                          <button type="submit" class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
+                          <button type="submit" 
+                            class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
                             title="Deletar" 
-                            onclick="confirmDelete(event, {{ work.id }})">
+                            onclick="confirmDelete(this)"> 
                             <i class="fa-solid fa-trash"></i>
                           </button>
                         </form>
@@ -288,11 +292,12 @@
                           <i class="fa-solid fa-pen me-1"></i>
                         </button>
 
-                        <form method="POST"  class="d-inline-flex" action="">
+                        <form method="POST"  class="d-inline-flex" action="{% url 'task-delete' task.id %}">
                           {% csrf_token %}
-                          <button type="submit" class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
+                          <button type="submit" 
+                            class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
                             title="Deletar" 
-                            onclick="confirmDelete(event, {{ work.id }})">
+                            onclick="confirmDelete(this)"> 
                             <i class="fa-solid fa-trash"></i>
                           </button>
                         </form>
@@ -378,11 +383,12 @@
                           <i class="fa-solid fa-pen me-1"></i>
                         </button>
 
-                        <form method="POST"  class="d-inline-flex" action="">
+                        <form method="POST"  class="d-inline-flex" action="{% url 'task-delete' task.id %}">
                           {% csrf_token %}
-                          <button type="submit" class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
+                          <button type="submit" 
+                            class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
                             title="Deletar" 
-                            onclick="confirmDelete(event, {{ work.id }})">
+                            onclick="confirmDelete(this)"> 
                             <i class="fa-solid fa-trash"></i>
                           </button>
                         </form>
@@ -663,6 +669,25 @@
       const modalElement = document.getElementById("modalUpdateTask");
       const modal = new bootstrap.Modal(modalElement);
       modal.show();
+    }
+
+    function confirmDelete(buttonElement) {
+      event.preventDefault(); 
+
+      Swal.fire({
+          title: 'Tem certeza?',
+          text: "Você realmente deseja excluir esta tarefa?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#028cc7',
+          cancelButtonColor: 'red',
+          confirmButtonText: 'Sim, excluir!',
+          cancelButtonText: 'Cancelar'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              buttonElement.closest('form').submit(); 
+          }
+      });
     }
   </script>
 {% endblock %}
