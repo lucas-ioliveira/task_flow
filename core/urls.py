@@ -26,4 +26,5 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     path('workspace/', include('workspace.urls')),
     path('tasks/', include('tasks.urls')),
+    path('profiles/', include('profiles.urls')),
 ]
