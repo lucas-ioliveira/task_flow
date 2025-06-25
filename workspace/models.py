@@ -10,6 +10,7 @@ class WorkSpace(Base):
     class Meta:
         verbose_name = 'Espaço de trabalho'
         verbose_name_plural = 'Espaços de trabalhos'
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"{self.title} - {self.user}"
