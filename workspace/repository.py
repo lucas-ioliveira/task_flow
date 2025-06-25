@@ -15,6 +15,13 @@ class WorkSpaceRepository:
             return WorkSpace.objects.get(id=id)
         except:
             return None
+        
+    @staticmethod
+    def get_work_space_title_by_id(id):
+        try:
+            return WorkSpace.objects.get(id=id).title
+        except:
+            return None
     
     @staticmethod
     def create_work_space(title, user):
