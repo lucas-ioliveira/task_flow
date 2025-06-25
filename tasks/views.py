@@ -75,3 +75,25 @@ class TaskUpdateStatusView(View):
             return redirect(previous_page)
         messages.success(request, 'Tarefa criada com sucesso!')
         return redirect(previous_page)
+
+
+@method_decorator(login_required, name='dispatch')
+class TaskUpdateView(View):
+
+    def post(self, request, task_id):
+        previous_page = request.META.get("HTTP_REFERER")
+
+        data = {
+            'task_id': task_id,
+            'title': request.POST.get('title_update'),
+            'description': request.POST.get('description_update'),
+            'priority': request.POST.get('priority_update'),
+            'status': request.POST.get('status_update'),
+        }
+        
+        task = TasksServices.update_task(data)
+        if not task:
+            messages.error(request, 'Ocorreu um erro ao atualizar a tarefa!')
+            return redirect(previous_page)
+        messages.success(request, 'Tarefa atualizada com sucesso!')
+        return redirect(previous_page)

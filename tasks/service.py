@@ -27,3 +27,18 @@ class TasksServices:
             return TaskRepository.update_status_task(task_id, status)
         except:
             return None
+        
+    @staticmethod
+    def update_task(data):
+        try:
+            task_id = data.get('task_id')
+            title = data.get('title')
+            description = data.get('description')
+            priority = data.get('priority')
+            status = data.get('status')
+            if status == 'Done':
+                completed_at = timezone.now()
+                return TaskRepository.update_task(task_id, title, description, priority, status, completed_at)
+            return TaskRepository.update_task(task_id, title, description, priority, status)
+        except:
+            return None

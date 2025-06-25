@@ -48,3 +48,18 @@ class TaskRepository:
             return task
         except Task.DoesNotExist:
             return None
+    
+    @staticmethod
+    def update_task(id, title, description, priority, status, completed_at=None):
+        try:
+            task = Task.objects.get(id=id)
+            task.title = title
+            task.description = description
+            task.priority = priority
+            task.status = status
+            if completed_at is not None:
+                task.completed_at = completed_at
+            task.save()
+            return task
+        except Task.DoesNotExist:
+            return None
