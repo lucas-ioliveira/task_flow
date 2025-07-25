@@ -39,7 +39,6 @@ jobs:
 
       - name: Configurar variáveis de ambiente
         run: |
-          echo "DEBUG=${{ secrets.DEBUG }}" >> .env
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
           echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
 
