@@ -1,7 +1,8 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 
-from authentication.views import CustomLoginView, CustomUserCreationView, CustomLogoutView,CustomPasswordChangeView
+from authentication.views import (CustomLoginView, CustomUserCreationView, 
+                                  CustomLogoutView,CustomPasswordChangeView)
 
 
 urlpatterns = [

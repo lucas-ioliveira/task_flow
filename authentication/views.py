@@ -53,7 +53,7 @@ class CustomUserCreationView(View):
 
 method_decorator(login_required, name='dispatch')
 class CustomPasswordChangeView(PasswordChangeView):
-    template_name = 'profile.html' 
+    template_name = 'profiles/profiles.html' 
     success_url = reverse_lazy('profile') 
     
     def form_valid(self, form):
