@@ -1,6 +1,6 @@
 services:
-  task-flow:
-    container_name: task-flow_app
+  task_flow_app:
+    container_name: task_flow_app
     build: 
       context: .
       dockerfile: Dockerfile
