@@ -17,10 +17,6 @@
   <div class="container-fluid px-4">
     <div class="d-flex justify-content-between align-items-center w-100">
       <h1 class="mt-4 mb-4">Perfil</h1>
-      {% comment %} <button class="btn" data-bs-toggle="modal" data-bs-target="#modalAddTask" style="background-color: #028cc7; color: white" title="Clique para criar uma nova tarefa">
-        <i class="fas fa-plus"></i>
-        <span>Nova tarefa</span>
-      </button> {% endcomment %}
     </div>
     <hr class="mb-4" />
 
@@ -30,7 +26,11 @@
           <div class="card shadow-lg border-0 rounded-4 mb-4">
             <div class="card-header bg-light p-4 rounded-top-4 border-bottom-0 d-flex justify-content-between align-items-center">
               <h5 class="modal-title fw-bold text-secondary">Informações de Acesso</h5>
-              <button type="button" class="btn btn-outline-secondary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#modalAlterarSenha"><i class="fa-solid fa-pen"></i></button>
+              <button type="button" class="btn btn-outline-secondary btn-sm px-3" 
+                data-bs-toggle="modal" 
+                data-bs-target="#modalUpdatePassword">
+                <i class="fa-solid fa-pen"></i>
+              </button>
             </div>
             <div class="card-body p-4">
               <div class="row g-3">
@@ -53,7 +53,15 @@
           <div class="card shadow-lg border-0 rounded-4 mb-4">
             <div class="card-header bg-light p-4 rounded-top-4 border-bottom-0 d-flex justify-content-between align-items-center">
               <h5 class="modal-title fw-bold text-secondary">Informações Pessoais</h5>
-              <button type="button" class="btn btn-outline-secondary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#modalInfoPessoais"><i class="fa-solid fa-pen"></i></button>
+              <button type="button" class="btn btn-outline-secondary btn-sm px-3" 
+                onclick="openModalPersonalInformation({
+                  user_id: '{{user.id}}',
+                  first_name: '{{ user.first_name|default:'Não informado' }}',
+                  last_name: '{{ user.last_name|default:'Não informado' }}',
+                  email: '{{ user.email|default:'Não informado' }}'
+                })">
+                <i class="fa-solid fa-pen"></i>
+              </button>
             </div>
             <div class="card-body p-4">
               <div class="row g-3">
@@ -201,6 +209,88 @@
     </div>
   </div>
 
+  <div class="modal fade" id="modalPersonalInformation" tabindex="-1" aria-labelledby="modalPersonalInformationLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content shadow-lg border-0 rounded-4">
+        <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+          <h5 class="modal-title fw-bold text-secondary">Atualizar informações pessoais</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <form id="formPersonalInformation" method="post" action="">
+            {% csrf_token %}
+
+            <div class="row g-3">
+
+              <div class="col-12">
+                <label for="idTitleLabel" class="form-label fw-semibold">Nome:</label>
+                <input type="text" class="form-control form-control-lg" id="idFirstName" name="first_name" value=""/>
+              </div>
+
+              <div class="col-12">
+                <label for="idTitleLabel" class="form-label fw-semibold">Sobrenome:</label>
+                <input type="text" class="form-control form-control-lg" id="idLastName" name="last_name" value=""/>
+              </div>
+
+              <div class="col-12">
+                <label for="idTitleLabel" class="form-label fw-semibold">E-mail:</label>
+                <input type="text" class="form-control form-control-lg" id="idEmail" name="email" value=""/>
+              </div>
+
+            </div>
+
+            <div class="modal-footer px-0 pb-0 pt-4 border-top-0">
+              <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn px-4" style="background-color: #028cc7; color: white">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalUpdatePassword" tabindex="-1" aria-labelledby="modalUpdatePasswordLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content shadow-lg border-0 rounded-4">
+        <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+          <h5 class="modal-title fw-bold text-secondary">Atualizar informações de acesso</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <form id="formUpdatePassword" method="post" action="{% url 'change_password' %}">
+            {% csrf_token %}
+
+            <div class="row g-3">
+
+              <div class="col-12">
+                <label for="idTitleLabel" class="form-label fw-semibold">Senha Atual:</label>
+                <input type="password" class="form-control form-control-lg" name="old_password" required/>
+              </div>
+
+              <div class="col-12">
+                <label for="idTitleLabel" class="form-label fw-semibold">Nova Senha:</label>
+                <input type="password" class="form-control form-control-lg" name="new_password1" required/>
+              </div>
+
+              <div class="col-12">
+                <label for="idTitleLabel" class="form-label fw-semibold">Confirmar Nova Senha:</label>
+                <input type="password" class="form-control form-control-lg" name="new_password2" required/>
+              </div>
+
+            </div>
+
+            <div class="modal-footer px-0 pb-0 pt-4 border-top-0">
+              <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn px-4" style="background-color: #028cc7; color: white">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     function getAddress() {
       const idCep = document.getElementById('idCep')
@@ -253,6 +343,19 @@
           })
           window.location.reload()
         })
+    }
+
+    function openModalPersonalInformation(data) {
+      let formPersonalInformation = document.getElementById('formPersonalInformation');
+      formPersonalInformation.action = `/profiles/user/${data.user_id}/update/`
+
+      document.getElementById('idFirstName').value = data.first_name
+      document.getElementById('idLastName').value = data.last_name
+      document.getElementById('idEmail').value = data.email
+      
+      const modalPersonalInformation = new bootstrap.Modal(document.getElementById('modalPersonalInformation'));
+        modalPersonalInformation.show();
+
     }
   </script>
 {% endblock %}
