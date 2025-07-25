@@ -1,0 +1,687 @@
+{% extends 'base/base_dash.html' %}
+
+{% load static %}
+
+{% block subtitle %}
+  Tasks
+{% endblock %}
+
+{% block style %}
+
+  html, body { background: #e9ecef; }
+  .card-gradient-primary { background: linear-gradient(45deg, #028cc7, #007bff); } 
+  .card-gradient-warning { background: linear-gradient(45deg, #ffc107, #e0a800); } 
+  .card-gradient-success { background: linear-gradient(45deg, #28a745, #1e7e34); } 
+  .card-gradient-danger { background: linear-gradient(45deg, #dc3545, #bd2130); }
+  .cursor-grab { cursor: -webkit-grab; cursor: grab; }
+  .tasks { min-height: 450px; }
+  .swal2-actions { display: flex; gap: 10px; justify-content: center; }
+
+{% endblock %}
+
+{% block main %}
+  {% include 'partials/messages/_messages.html' %}
+
+  <div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center w-100">
+        <h1 class="mt-4 mb-4">Kanban - {{ work_space_name }}</h1>
+        <button class="btn" data-bs-toggle="modal" 
+            data-bs-target="#modalAddTask" 
+            style="background-color: #028cc7; color: white" 
+            title="Clique para criar uma nova tarefa">
+            <i class="fas fa-plus"></i>
+            <span>Nova tarefa</span>
+          </button>
+    </div>
+    <hr class="mb-4" /> 
+
+    <div class="container py-5">
+
+      <div class="row">
+        <!-- Start Todo -->
+        <div class="col-12 col-lg-3">
+          <div class="card mb-3">
+            <div class="card-header card-gradient-primary text-white d-flex justify-content-between align-items-center">
+                <h3 class="card-title h5 mb-0">À fazer</h3>
+                <span class="badge bg-white text-primary rounded-pill px-3 py-2 fw-bold fs-6">{{ todo|length }}</span>
+            </div>
+            <div class="card-body">
+              <div class="tasks" style="max-height: 400px; overflow-y: auto; padding-right: 15px;">
+                <!-- Start task -->
+                {% for task in todo %}
+                  <div class="card mb-3">
+                    <div class="card-body">
+                      <div class="text-right mb-3">
+                        {% if task.priority == 'Low' %}
+                          <span class="badge bg-secondary text-white mb-2">
+                            Baixa
+                          </span>
+                          {% elif task.priority == 'Medium' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Media
+                            </span>
+                          {% elif task.priority == 'High' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Alta
+                            </span>
+                          {% elif task.priority == 'Urgent' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Urgente
+                            </span>
+                          {% endif %}
+                      </div>
+                      <p class="mb-5">{{ task.title }}</p>
+                      <hr class="mb-3">
+                      <div class="text-right">
+
+                        <button type="button" 
+                          class="btn btn-outline-primary btn-sm me-2 rounded-pill" 
+                          title="Detalhes"
+                          onclick="detalhesTask({
+                              title: '{{ task.title }}',
+                              description: '{{ task.description }}',
+                              priority: '{{ task.priority }}',
+                              status: '{{ task.status }}',
+                              workSpaceTitle: '{{ task.work_space.title }}',
+                              createdAt: '{{ task.created_at }}',
+                              completedAt: '{{ task.completed_at|default:"Não concluído" }}'
+                          })">
+                          <i class="fa-solid fa-eye me-1"></i>
+                        </button>
+
+                        <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
+                          title="Alterar status" 
+                          onclick="updateStatusTask('{{ task.id }}', '{{ task.status }}')">
+                          <i class="fa-solid fa-check"></i>
+                        </button>
+
+
+                        <button type="button" 
+                          class="btn btn-outline-warning btn-sm me-2 rounded-pill"
+                          title="Editar"
+                          onclick="updateTask({
+                              taskId: '{{ task.id }}',
+                              title: '{{ task.title }}',
+                              description: '{{ task.description }}',
+                              priority: '{{ task.priority }}',
+                              status: '{{ task.status }}',
+                          })">
+                          <i class="fa-solid fa-pen me-1"></i>
+                        </button>
+
+                        <form method="POST"  class="d-inline-flex" action="{% url 'task-delete' task.id %}">
+                          {% csrf_token %}
+                          <button type="submit" 
+                            class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
+                            title="Deletar" 
+                            onclick="confirmDelete(this)"> 
+                            <i class="fa-solid fa-trash"></i>
+                          </button>
+                        </form>
+
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+                <!-- End task -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Todo -->
+
+        <!-- Start In progress -->
+        <div class="col-12 col-lg-3">
+          <div class="card mb-3">
+            <div class="card-header card-gradient-warning text-white d-flex justify-content-between align-items-center">
+                <h3 class="card-title h5 mb-0">Em andamento</h3>
+                <span class="badge bg-white text-warning rounded-pill px-3 py-2 fw-bold fs-6">{{ in_progress|length }}</span>
+            </div>
+            <div class="card-body">
+              <div class="tasks" style="max-height: 400px; overflow-y: auto; padding-right: 15px;">
+                <!-- Start task -->
+                {% for task in in_progress %}
+                  <div class="card mb-3">
+                    <div class="card-body">
+                      <div class="text-right mb-3">
+                        {% if task.priority == 'Low' %}
+                          <span class="badge bg-secondary text-white mb-2">
+                            Baixa
+                          </span>
+                          {% elif task.priority == 'Medium' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Media
+                            </span>
+                          {% elif task.priority == 'High' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Alta
+                            </span>
+                          {% elif task.priority == 'Urgent' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Urgente
+                            </span>
+                          {% endif %}
+                        
+                      </div>
+                      <p class="mb-5">{{ task.title }}</p>
+                      <hr class="mb-3">
+                      <div class="text-right">
+
+                        <button type="button" 
+                          class="btn btn-outline-primary btn-sm me-2 rounded-pill" 
+                          title="Detalhes"
+                          onclick="detalhesTask({
+                              title: '{{ task.title }}',
+                              description: '{{ task.description }}',
+                              priority: '{{ task.priority }}',
+                              status: '{{ task.status }}',
+                              workSpaceTitle: '{{ task.work_space.title }}',
+                              createdAt: '{{ task.created_at }}',
+                              completedAt: '{{ task.completed_at|default:"Não concluído" }}'
+                          })">
+                          <i class="fa-solid fa-eye me-1"></i>
+                        </button>
+
+                        <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
+                          title="Alterar status" 
+                          onclick="updateStatusTask('{{ task.id }}', '{{ task.status }}')">
+                          <i class="fa-solid fa-check"></i>
+                        </button>
+
+                        <button type="button" 
+                          class="btn btn-outline-warning btn-sm me-2 rounded-pill"
+                          title="Editar"
+                          onclick="updateTask({
+                              taskId: '{{ task.id }}',
+                              title: '{{ task.title }}',
+                              description: '{{ task.description }}',
+                              priority: '{{ task.priority }}',
+                              status: '{{ task.status }}',
+                          })">
+                          <i class="fa-solid fa-pen me-1"></i>
+                        </button>
+
+                        <form method="POST"  class="d-inline-flex" action="{% url 'task-delete' task.id %}">
+                          {% csrf_token %}
+                          <button type="submit" 
+                            class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
+                            title="Deletar" 
+                            onclick="confirmDelete(this)"> 
+                            <i class="fa-solid fa-trash"></i>
+                          </button>
+                        </form>
+
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+                <!-- End task -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End In progress -->
+
+        <!-- Start Paused -->
+        <div class="col-12 col-lg-3">
+          <div class="card mb-3">
+            <div class="card-header card-gradient-danger text-white d-flex justify-content-between align-items-center">
+                <h3 class="card-title h5 mb-0">Pausadas</h3>
+                <span class="badge bg-white text-danger rounded-pill px-3 py-2 fw-bold fs-6">{{ paused|length }}</span>
+            </div>
+            <div class="card-body">
+              <div class="tasks" style="max-height: 400px; overflow-y: auto; padding-right: 15px;">
+                <!-- Start task -->
+                {% for task in paused %}
+                  <div class="card mb-3">
+                    <div class="card-body">
+                      <div class="text-right mb-3">
+                        {% if task.priority == 'Low' %}
+                          <span class="badge bg-secondary text-white mb-2">
+                            Baixa
+                          </span>
+                          {% elif task.priority == 'Medium' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Media
+                            </span>
+                          {% elif task.priority == 'High' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Alta
+                            </span>
+                          {% elif task.priority == 'Urgent' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Urgente
+                            </span>
+                          {% endif %}
+                      </div>
+                      <p class="mb-5">{{ task.title }}</p>
+                      <hr class="mb-3">
+                      <div class="text-right">
+
+                        <button type="button" 
+                          class="btn btn-outline-primary btn-sm me-2 rounded-pill" 
+                          title="Detalhes"
+                          onclick="detalhesTask({
+                              title: '{{ task.title }}',
+                              description: '{{ task.description }}',
+                              priority: '{{ task.priority }}',
+                              status: '{{ task.status }}',
+                              workSpaceTitle: '{{ task.work_space.title }}',
+                              createdAt: '{{ task.created_at }}',
+                              completedAt: '{{ task.completed_at|default:"Não concluído" }}'
+                          })">
+                          <i class="fa-solid fa-eye me-1"></i>
+                        </button>
+
+                        <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
+                          title="Alterar status" 
+                          onclick="updateStatusTask('{{ task.id }}', '{{ task.status }}')">
+                          <i class="fa-solid fa-check"></i>
+                        </button>
+
+                        <button type="button" 
+                          class="btn btn-outline-warning btn-sm me-2 rounded-pill"
+                          title="Editar"
+                          onclick="updateTask({
+                              taskId: '{{ task.id }}',
+                              title: '{{ task.title }}',
+                              description: '{{ task.description }}',
+                              priority: '{{ task.priority }}',
+                              status: '{{ task.status }}',
+                          })">
+                          <i class="fa-solid fa-pen me-1"></i>
+                        </button>
+
+                        <form method="POST"  class="d-inline-flex" action="{% url 'task-delete' task.id %}">
+                          {% csrf_token %}
+                          <button type="submit" 
+                            class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
+                            title="Deletar" 
+                            onclick="confirmDelete(this)"> 
+                            <i class="fa-solid fa-trash"></i>
+                          </button>
+                        </form>
+
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+                <!-- End task -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Paused -->
+
+        <!-- Start Done -->
+        <div class="col-12 col-lg-3">
+          <div class="card mb-3">
+            <div class="card-header card-gradient-success text-white d-flex justify-content-between align-items-center">
+                <h3 class="card-title h5 mb-0">Concluídas</h3>
+                <span class="badge bg-white text-success rounded-pill px-3 py-2 fw-bold fs-6">{{ done|length }}</span>
+            </div>
+            <div class="card-body">
+              <div class="tasks" style="max-height: 400px; overflow-y: auto; padding-right: 15px;">
+                <!-- Start task -->
+                 {% for task in done %}
+                  <div class="card mb-3">
+                    <div class="card-body">
+                      <div class="text-right mb-3">
+                        {% if task.priority == 'Low' %}
+                          <span class="badge bg-secondary text-white mb-2">
+                            Baixa
+                          </span>
+                          {% elif task.priority == 'Medium' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Media
+                            </span>
+                          {% elif task.priority == 'High' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Alta
+                            </span>
+                          {% elif task.priority == 'Urgent' %}
+                            <span class="badge bg-secondary text-white mb-2">
+                              Urgente
+                            </span>
+                          {% endif %}
+                      </div>
+                      <p class="mb-5">{{ task.title }}</p>
+                      <hr class="mb-3">
+                      <div class="text-right">
+
+                        <button type="button" 
+                          class="btn btn-outline-primary btn-sm me-2 rounded-pill" 
+                          title="Detalhes"
+                          onclick="detalhesTask({
+                              title: '{{ task.title }}',
+                              description: '{{ task.description }}',
+                              priority: '{{ task.priority }}',
+                              status: '{{ task.status }}',
+                              workSpaceTitle: '{{ task.work_space.title }}',
+                              createdAt: '{{ task.created_at }}',
+                              completedAt: '{{ task.completed_at|default:"Não concluído" }}'
+                          })">
+                          <i class="fa-solid fa-eye me-1"></i>
+                        </button>
+
+                        <button type="submit" class="btn btn-outline-success btn-sm me-2 rounded-pill" 
+                          title="Alterar status" 
+                          onclick="updateStatusTask('{{ task.id }}', '{{ task.status }}')">
+                          <i class="fa-solid fa-check"></i>
+                        </button>
+
+                        <button type="button" 
+                          class="btn btn-outline-warning btn-sm me-2 rounded-pill"
+                          title="Editar"
+                          onclick="updateTask({
+                              taskId: '{{ task.id }}',
+                              title: '{{ task.title }}',
+                              description: '{{ task.description }}',
+                              priority: '{{ task.priority }}',
+                              status: '{{ task.status }}',
+                          })">
+                          <i class="fa-solid fa-pen me-1"></i>
+                        </button>
+
+                        <form method="POST"  class="d-inline-flex" action="{% url 'task-delete' task.id %}">
+                          {% csrf_token %}
+                          <button type="submit" 
+                            class="btn btn-outline-danger btn-sm me-2 rounded-pill" 
+                            title="Deletar" 
+                            onclick="confirmDelete(this)"> 
+                            <i class="fa-solid fa-trash"></i>
+                          </button>
+                        </form>
+
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+                <!-- End task -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Done -->
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalAddTask" tabindex="-1" aria-labelledby="modalAddTaskLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content shadow-lg border-0 rounded-4">
+        <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+          <h5 class="modal-title fw-bold text-secondary">Nova Tarefa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <form method="post" action="{% url 'task-create' %}">
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label for="idTitleLabel" class="form-label fw-semibold">Título:</label>
+              <input type="text" class="form-control form-control-lg" id="idTitle" name="title" placeholder="Ex: Projeto X, Tarefas Diárias, etc." required />
+            </div>
+
+            <div class="mb-3">
+              <label for="idTitleLabel" class="form-label fw-semibold">Descrição:</label>
+              <textarea class="form-control form-control-lg" id="idDescription" name="description" placeholder="Ex: Projeto X, Tarefas Diárias, etc."></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="idTitleLabel" class="form-label fw-semibold">Prioridade:</label>
+              <select class="form-select form-select-lg" name="priority" id="idPriority">
+                {% for p in priority %}
+                  <option value="{{p.0}}">{{p.1}}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="idTitleLabel" class="form-label fw-semibold">Status:</label>
+              <select class="form-select form-select-lg" name="status" id="idstatus">
+                {% for s in status %}
+                  <option value="{{s.0}}">{{s.1}}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="idTitleLabel" class="form-label fw-semibold">Espaço de Trabalho:</label>
+              <input type="text" class="form-control form-control-lg" id="idWorkSpace" name="work_space" value="{{work_space_name}}" readonly/>
+              <input type="hidden" class="form-control form-control-lg" name="work_space_id" value="{{work_space_id}}"/>
+            </div>
+
+            <div class="modal-footer px-0 pb-0 pt-4 border-top-0">
+              <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn px-4" style="background-color: #028cc7; color: white";>Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalDetailTask" tabindex="-1" aria-labelledby="modalDetailTaskLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content shadow-lg border-0 rounded-4">
+        <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+          <h5 class="modal-title fw-bold text-secondary">Detalhes da Tarefa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+
+          <h4 id="idTitleDetail" class="fw-bold mb-3 text-dark"></h4>
+          <p id="idDescriptionDetail" class="text-muted mb-4"></p>
+
+          <div class="row mb-3">
+              <div class="col-md-6">
+                  <p class="mb-1 fw-semibold">Prioridade:</p>
+                  <span id="idPriorityDetail" class="badge bg-secondary p-2 rounded-pill"></span>
+
+              </div>
+              <div class="col-md-6">
+                  <p class="mb-1 fw-semibold">Status:</p>
+                  <span id="idStatusDetail" class="badge bg-secondary p-2 rounded-pill"></span>
+              </div>
+          </div>
+
+          <div class=" row mb-3">
+            <div class="col-md-6">
+              <p class="mb-1 fw-semibold">Espaço de Trabalho:</p>
+              <span id="idWorkSpaceDetail" class="text-muted"></span>
+            </div>
+
+            <div class="col-md-6">
+              <p class="mb-1 fw-semibold">Concluído em:</p>
+              <span id="idDateDetail" class="text-muted"></span>
+            </div>
+          </div>
+
+          <hr class="my-4">
+          <div class="text-end">
+              <p class="mb-1 fw-semibold">Criado em:</p>
+              <p id="idCreatedDetail" class="text-muted mb-0"><small></small></p>
+          </div>
+
+          <div class="modal-footer px-0 pb-0 pt-4 border-top-0">
+              <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalUpdateStatusTask" tabindex="-1" aria-labelledby="modalUpdateStatusTaskLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content shadow-lg border-0 rounded-4">
+        <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+          <h5 class="modal-title fw-bold text-secondary" id="modalUpdateStatusTaskLabel">Atualizar status da tarefa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id='formUpdateStatusTask' method="post" action="">
+              {% csrf_token %}
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label for="taskStatusSelect" class="form-label fw-semibold">Selecione o novo status:</label>
+              <select class="form-select" id="taskStatusSelect" name="task_status_update" aria-label="Selecione o status da tarefa">
+                <option selected disabled>Escolha o status...</option>
+                {% for s in status %}
+                  <option value="{{s.0}}">{{s.1}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-footer px-4 pb-4 pt-0 border-top-0 d-flex justify-content-end">
+            <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Fechar</button>
+            <button type="submit" class="btn px-4" style="background-color: #028cc7; color: white;">Salvar Alterações</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalUpdateTask" tabindex="-1" aria-labelledby="modalUpdateTaskLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content shadow-lg border-0 rounded-4">
+        <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+          <h5 class="modal-title fw-bold text-secondary">Atualizar Tarefa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <form id='formUpdateTask' method="post" action="">
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label for="idTitleLabel" class="form-label fw-semibold">Título:</label>
+              <input type="text" class="form-control form-control-lg" id="idTitleUpdate" name="title_update" placeholder="Ex: Projeto X, Tarefas Diárias, etc." required />
+            </div>
+
+            <div class="mb-3">
+              <label for="idTitleLabel" class="form-label fw-semibold">Descrição:</label>
+              <textarea class="form-control form-control-lg" id="idDescriptionUpdate" name="description_update" placeholder="Ex: Projeto X, Tarefas Diárias, etc."></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="idTitleLabel" class="form-label fw-semibold">Prioridade:</label>
+              <select class="form-select form-select-lg" name="priority_update" id="idPriorityUpdate">
+                {% for p in priority %}
+                  <option value="{{p.0}}">{{p.1}}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="idTitleLabel" class="form-label fw-semibold">Status:</label>
+              <select class="form-select form-select-lg" name="status_update" id="idstatusUpdate">
+                {% for s in status %}
+                  <option value="{{s.0}}">{{s.1}}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="modal-footer px-0 pb-0 pt-4 border-top-0">
+              <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn  px-4" style="background-color: #028cc7; color: white;">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function detalhesTask(data) {
+      console.log(data);
+      document.getElementById("idTitleDetail").innerHTML = data.title;
+      document.getElementById("idDescriptionDetail").innerHTML = data.description;
+      document.getElementById("idWorkSpaceDetail").innerHTML = data.workSpaceTitle;
+      document.getElementById("idDateDetail").innerHTML = data.completedAt;
+      document.getElementById("idCreatedDetail").innerHTML = data.createdAt;
+      document.getElementById("idPriorityDetail").innerHTML = data.priority;
+
+      if (data.priority == 'Low') {
+        document.getElementById("idPriorityDetail").innerHTML = 'Baixa'
+
+      } else if (data.priority == 'Medium') {
+        document.getElementById("idPriorityDetail").innerHTML = 'Média'
+      
+      } else if (data.priority == 'High') {
+        document.getElementById("idPriorityDetail").innerHTML = 'Alta'
+      
+      } else if (data.priority == 'Urgent') {
+        document.getElementById("idPriorityDetail").innerHTML = 'Urgente'
+        
+      } else {
+        document.getElementById("idPriorityDetail").innerHTML = 'Desconhecido'
+      }
+
+      if (data.status == 'To do') {
+        document.getElementById("idStatusDetail").innerHTML = 'À fazer'
+
+      } else if (data.status == 'In progress') {
+        document.getElementById("idStatusDetail").innerHTML = 'Em andamento'
+      
+      } else if (data.status == 'Done') {
+        document.getElementById("idStatusDetail").innerHTML = 'Concluído'
+      
+      } else if (data.status == 'Paused') {
+        document.getElementById("idStatusDetail").innerHTML = 'Pausado'
+        
+      } else {
+        document.getElementById("idStatusDetail").innerHTML = 'Desconhecido'
+      }
+
+      const modalElement = document.getElementById("modalDetailTask");
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+
+    function updateStatusTask(taskId, taskStatus) {
+      document.getElementById("taskStatusSelect").value = taskStatus;
+
+      const formUpdateStatusTask = document.getElementById("formUpdateStatusTask");
+      formUpdateStatusTask.action = `/tasks/${taskId}/status/update/`;
+      const modalElement = document.getElementById("modalUpdateStatusTask");
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+
+    function updateTask(data) {
+      document.getElementById("idTitleUpdate").value = data.title;
+      document.getElementById("idDescriptionUpdate").value = data.description;
+      document.getElementById("idPriorityUpdate").value = data.priority;
+      document.getElementById("idstatusUpdate").value = data.status;
+
+      const formUpdateTask = document.getElementById("formUpdateTask");
+      formUpdateTask.action = `/tasks/${data.taskId}/update/`;
+
+      const modalElement = document.getElementById("modalUpdateTask");
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+
+    function confirmDelete(buttonElement) {
+      event.preventDefault(); 
+
+      Swal.fire({
+          title: 'Tem certeza?',
+          text: "Você realmente deseja excluir esta tarefa?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#028cc7',
+          cancelButtonColor: 'red',
+          confirmButtonText: 'Sim, excluir!',
+          cancelButtonText: 'Cancelar'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              buttonElement.closest('form').submit(); 
+          }
+      });
+    }
+  </script>
+{% endblock %}

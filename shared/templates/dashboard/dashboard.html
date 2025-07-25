@@ -1,0 +1,208 @@
+{% extends 'base/base_dash.html' %}
+{% load static %}
+
+{% block subtitle %}
+  Dashboard
+{% endblock %}
+
+{% block style %}
+  .card-gradient-primary { background: linear-gradient(45deg, #028cc7, #007bff); } .card-gradient-warning { background: linear-gradient(45deg, #ffc107, #e0a800); } .card-gradient-success { background: linear-gradient(45deg, #28a745, #1e7e34); } .card-gradient-danger { background: linear-gradient(45deg, #dc3545, #bd2130); }
+
+  .hover-lift-lg { transition: transform 0.3s ease-out, box-shadow 0.3s ease-out; }
+
+  .hover-lift-lg:hover { transform: translateY(-8px); box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.2); }
+
+  .swal2-actions { display: flex; gap: 10px; justify-content: center; }
+{% endblock %}
+
+{% block main %}
+  {% include 'partials/messages/_messages.html' %}
+  <main>
+    <div class="container-fluid px-4">
+      <h1 class="mt-4">Dashboard</h1>
+      <hr />
+      <div class="row mt-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-0 shadow-lg h-100 card-gradient-primary hover-lift-lg">
+            <div class="card-body text-white">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-tasks fa-3x me-3 opacity-75"></i>
+                <div>
+                  <h5 class="card-title mb-0">Tarefas à fazer</h5>
+                  <div class="display-6 fw-bold">{{todo|length}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-0 shadow-lg h-100 card-gradient-warning hover-lift-lg">
+            <div class="card-body text-white">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-hourglass-half fa-3x me-3 opacity-75"></i>
+                <div>
+                  <h5 class="card-title mb-0">Tarefas em andamento</h5>
+                  <div class="display-6 fw-bold">{{in_progress|length}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-0 shadow-lg h-100 card-gradient-danger hover-lift-lg">
+            <div class="card-body text-white">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-pause-circle fa-3x me-3 opacity-75"></i>
+                <div>
+                  <h5 class="card-title mb-0">Tarefas pausadas</h5>
+                  <div class="display-6 fw-bold">{{paused|length}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-0 shadow-lg h-100 card-gradient-success hover-lift-lg">
+            <div class="card-body text-white">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-check-circle fa-3x me-3 opacity-75"></i>
+                <div>
+                  <h5 class="card-title mb-0">Tarefas concluídas</h5>
+                  <div class="display-6 fw-bold">{{done|length}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-5">
+        <div class="d-flex justify-content-between align-items-center w-100">
+          <h4>Espaço de trabalho</h4>
+          <button class="btn" data-bs-toggle="modal" data-bs-target="#modalAddWorkSpace" style="background-color: #028cc7; color: white" title="Clique para criar um novo espaço de trabalho">
+            {% comment %} <i class="fas fa-plus"></i> {% endcomment %}
+            <span>Novo espaço de trabalho</span>
+          </button>
+        </div>
+      </div>
+      <div class="row mt-5">
+        {% for work in work_space %}
+          <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm border-0 rounded-lg">
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-center pb-3 mb-0 fw-bold text-truncate border-bottom">{{ work.title }}</h5>
+
+                <div class="mt-auto d-flex justify-content-end pt-3">
+
+                  <a class="btn btn-outline-primary btn-sm me-2 rounded-pill"
+                    href="{% url 'tasks' work.id %}">
+                    <i class="fa-solid fa-eye me-1"></i>
+                    Ver
+                  </a>
+
+                  <button type="button" class="btn btn-outline-warning btn-sm me-2 rounded-pill" onclick="editarWorkSpace('{{ work.id }}')"><i class="fa-solid fa-pen me-1"></i> Editar</button>
+                  <form method="POST"  class="d-inline-flex" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm me-2 rounded-pill" title="Deletar" onclick="confirmDelete(event, {{ work.id }})">
+                        <i class="fa-solid fa-trash"></i>
+                        Deletar
+                    </button>
+                  </form>
+                 
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %} 
+      </div>
+    </div>
+  </main>
+
+  <div class="modal fade" id="modalAddWorkSpace" tabindex="-1" aria-labelledby="modalAddEspacoTrabalhoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content shadow-lg border-0 rounded-4">
+        <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+          <h5 class="modal-title fw-bold text-secondary" id="modalAddEspacoTrabalhoLabel">Criar Espaço de Trabalho</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <form method="post" action="{% url 'work-space' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="idTitleLabel" class="form-label fw-semibold">Título do Espaço de Trabalho:</label>
+              <input type="text" class="form-control form-control-lg" id="idTitle" name="title" placeholder="Ex: Projeto X, Tarefas Diárias, etc." required />
+            </div>
+
+            <div class="modal-footer px-0 pb-0 pt-4 border-top-0">
+              <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn px-4" style="background-color: #028cc7; color: white">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalEditarWorkSpace" tabindex="-1" aria-labelledby="modalAddEspacoTrabalhoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content shadow-lg border-0 rounded-4">
+        <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+          <h5 class="modal-title fw-bold text-secondary" id="modalAddEspacoTrabalhoLabel">Editar Espaço de Trabalho</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <form id="formEditarWorkSpace" method="post" action="">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="id_titulo" class="form-label fw-semibold">Título do Espaço de Trabalho:</label>
+              <input type="text" class="form-control form-control-lg" id="idTituloUpdate" name="titulo_update" placeholder="Ex: Projeto X, Tarefas Diárias, etc." required />
+            </div>
+
+            <div class="modal-footer px-0 pb-0 pt-4 border-top-0">
+              <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn px-4" style="background-color: #028cc7; color: white;">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function editarWorkSpace(work_space_id) {
+        const formEditarWorkSpace = document.getElementById('formEditarWorkSpace');
+        formEditarWorkSpace.action = `/workspace/${work_space_id}/update/`;
+
+        const modalElement = document.getElementById('modalEditarWorkSpace');
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    }
+
+    function confirmDelete(event, work_space_id) {
+        event.preventDefault();
+
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: "Você realmente deseja excluir este espaço de trabalho?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#028cc7',
+            cancelButtonColor: 'red',
+            confirmButtonText: 'Sim, excluir!',
+            cancelButtonText: 'Cancelar',
+            buttonsStyling: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = event.target.closest('form');
+                form.action = `/workspace/${work_space_id}/delete/`;
+                form.submit();
+            }
+        });
+    }
+  </script>
+{% endblock %}

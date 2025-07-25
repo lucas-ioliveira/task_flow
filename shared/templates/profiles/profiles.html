@@ -1,0 +1,361 @@
+{% extends 'base/base_dash.html' %}
+{% load formatter %}
+
+{% load static %}
+
+{% block subtitle %}
+  Profile
+{% endblock %}
+
+{% block style %}
+  html, body { background: #e9ecef; } .swal2-actions { display: flex; gap: 10px; justify-content: center; }
+{% endblock %}
+
+{% block main %}
+  {% include 'partials/messages/_messages.html' %}
+
+  <div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center w-100">
+      <h1 class="mt-4 mb-4">Perfil</h1>
+    </div>
+    <hr class="mb-4" />
+
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-md-9">
+          <div class="card shadow-lg border-0 rounded-4 mb-4">
+            <div class="card-header bg-light p-4 rounded-top-4 border-bottom-0 d-flex justify-content-between align-items-center">
+              <h5 class="modal-title fw-bold text-secondary">Informações de Acesso</h5>
+              <button type="button" class="btn btn-outline-secondary btn-sm px-3" 
+                data-bs-toggle="modal" 
+                data-bs-target="#modalUpdatePassword">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-sm-4">
+                  <p class="mb-1 fw-semibold">Usuário:</p>
+                  <span class="text-muted">{{ user.username }}</span>
+                </div>
+                <div class="col-sm-4">
+                  <p class="mb-1 fw-semibold">Data de Cadastro:</p>
+                  <span class="text-muted">{{ user.date_joined|date:'d/m/Y' }}</span>
+                </div>
+                <div class="col-sm-4">
+                  <p class="mb-1 fw-semibold">Último Login:</p>
+                  <span class="text-muted">{{ user.last_login|date:'d/m/Y H:i' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow-lg border-0 rounded-4 mb-4">
+            <div class="card-header bg-light p-4 rounded-top-4 border-bottom-0 d-flex justify-content-between align-items-center">
+              <h5 class="modal-title fw-bold text-secondary">Informações Pessoais</h5>
+              <button type="button" class="btn btn-outline-secondary btn-sm px-3" 
+                onclick="openModalPersonalInformation({
+                  user_id: '{{user.id}}',
+                  first_name: '{{ user.first_name|default:'Não informado' }}',
+                  last_name: '{{ user.last_name|default:'Não informado' }}',
+                  email: '{{ user.email|default:'Não informado' }}'
+                })">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-sm-4">
+                  <p class="mb-1 fw-semibold">Nome:</p>
+                  <span class="text-muted">{{ user.first_name|default:'Não informado' }}</span>
+                </div>
+                <div class="col-sm-4">
+                  <p class="mb-1 fw-semibold">Sobrenome:</p>
+                  <span class="text-muted">{{ user.last_name|default:'Não informado' }}</span>
+                </div>
+                <div class="col-sm-4">
+                  <p class="mb-1 fw-semibold">E-mail:</p>
+                  <span class="text-muted">{{ user.email|default:'Não informado' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-header bg-light p-4 rounded-top-4 border-bottom-0 d-flex justify-content-between align-items-center">
+              <h5 class="modal-title fw-bold text-secondary">Informações de Contato</h5>
+              <button type="button" class="btn btn-outline-secondary btn-sm px-3" 
+                data-bs-toggle="modal" 
+                data-bs-target="#modalContactDetails">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-sm-4">
+                  <p class="mb-1 fw-semibold">Telefone:</p>
+                  <span class="text-muted">{{ contact_details.phone|format_phone|default:'Não informado' }}</span>
+                </div>
+                <div class="col-sm-4">
+                  <p class="mb-1 fw-semibold">CEP:</p>
+                  <span class="text-muted">{{ contact_details.cep|format_cep|default:'Não informado' }}</span>
+                </div>
+                <div class="col-sm-4">
+                  <p class="mb-1 fw-semibold">Logradouro:</p>
+                  <span class="text-muted">{{ contact_details.address|default:'Não informado' }}</span>
+                </div>
+
+                <div class="col-12 mt-4">
+                  <div class="row g-3">
+                    <div class="col-sm-4">
+                      <p class="mb-1 fw-semibold">Número:</p>
+                      <span class="text-muted">{{ contact_details.number_address|default:'Não informado' }}</span>
+                    </div>
+                    <div class="col-sm-4">
+                      <p class="mb-1 fw-semibold">Bairro:</p>
+                      <span class="text-muted">{{ contact_details.district|default:'Não informado' }}</span>
+                    </div>
+                    <div class="col-sm-4">
+                      <p class="mb-1 fw-semibold">Cidade:</p>
+                      <span class="text-muted">{{ contact_details.city|default:'Não informado' }}</span>
+                    </div>
+                    <div class="col-sm-4">
+                      <p class="mb-1 fw-semibold">UF:</p>
+                      <span class="text-muted">{{ contact_details.state|default:'Não informado' }}</span>
+                    </div>
+                    <div class="col-sm-8">
+                      <p class="mb-1 fw-semibold">Complemento:</p>
+                      <span class="text-muted">{{ contact_details.complement|default:'Não informado' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalContactDetails" tabindex="-1" aria-labelledby="modalContactDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content shadow-lg border-0 rounded-4">
+        <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+          <h5 class="modal-title fw-bold text-secondary">Atualizar informações de contato</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <form method="post" action="{% url 'address-update' %}">
+            {% csrf_token %}
+
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <label for="idTitleLabel" class="form-label fw-semibold">CEP:</label>
+                <div class="input-group">
+                  <input type="text" class="form-control form-control-lg" id="idCep" name="cep" placeholder="Ex: 00000-000" required />
+                  <button type="button"
+                  onclick="getAddress()"
+                    class="btn btn-outline-secondary" 
+                    id="btnSearchCep">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <label for="idTitleLabel" class="form-label fw-semibold">Logradouro:</label>
+                <input type="text" class="form-control form-control-lg" id="idlogradouro" name="logradouro" placeholder="Ex: Rua X, Av. Y, etc." />
+              </div>
+
+              <div class="col-sm-6">
+                <label for="idTitleLabel" class="form-label fw-semibold">Número:</label>
+                <input type="text" class="form-control form-control-lg" id="idNumero" name="numero" placeholder="Ex: 00" />
+              </div>
+
+              <div class="col-sm-6">
+                <label for="idTitleLabel" class="form-label fw-semibold">Bairro:</label>
+                <input type="text" class="form-control form-control-lg" id="idBairro" name="bairro" placeholder="Ex: Bairro X" />
+              </div>
+
+              <div class="col-sm-6">
+                <label for="idTitleLabel" class="form-label fw-semibold">Cidade:</label>
+                <input type="text" class="form-control form-control-lg" id="idcidade" name="cidade" placeholder="Ex: Cidade X" />
+              </div>
+
+              <div class="col-sm-6">
+                <label for="idTitleLabel" class="form-label fw-semibold">UF:</label>
+                <input type="text" class="form-control form-control-lg" id="idUf" name="uf" placeholder="Ex: UF X" />
+              </div>
+
+              <div class="col-sm-6">
+                <label for="idTitleLabel" class="form-label fw-semibold">Complemento:</label>
+                <input type="text" class="form-control form-control-lg" id="idComplemento" name="complemento" placeholder="Ex: Complemento X" />
+              </div>
+
+              <div class="col-sm-6">
+                <label for="idTitleLabel" class="form-label fw-semibold">Telefone:</label>
+                <input type="text" class="form-control form-control-lg" id="idTelefone" name="telefone" placeholder="Ex: (00) 00000-0000" />
+              </div>
+            </div>
+
+            <div class="modal-footer px-0 pb-0 pt-4 border-top-0">
+              <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn px-4" style="background-color: #028cc7; color: white">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalPersonalInformation" tabindex="-1" aria-labelledby="modalPersonalInformationLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content shadow-lg border-0 rounded-4">
+        <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+          <h5 class="modal-title fw-bold text-secondary">Atualizar informações pessoais</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <form id="formPersonalInformation" method="post" action="">
+            {% csrf_token %}
+
+            <div class="row g-3">
+
+              <div class="col-12">
+                <label for="idTitleLabel" class="form-label fw-semibold">Nome:</label>
+                <input type="text" class="form-control form-control-lg" id="idFirstName" name="first_name" value=""/>
+              </div>
+
+              <div class="col-12">
+                <label for="idTitleLabel" class="form-label fw-semibold">Sobrenome:</label>
+                <input type="text" class="form-control form-control-lg" id="idLastName" name="last_name" value=""/>
+              </div>
+
+              <div class="col-12">
+                <label for="idTitleLabel" class="form-label fw-semibold">E-mail:</label>
+                <input type="text" class="form-control form-control-lg" id="idEmail" name="email" value=""/>
+              </div>
+
+            </div>
+
+            <div class="modal-footer px-0 pb-0 pt-4 border-top-0">
+              <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn px-4" style="background-color: #028cc7; color: white">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalUpdatePassword" tabindex="-1" aria-labelledby="modalUpdatePasswordLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content shadow-lg border-0 rounded-4">
+        <div class="modal-header bg-light p-4 rounded-top-4 border-bottom-0">
+          <h5 class="modal-title fw-bold text-secondary">Atualizar informações de acesso</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <form id="formUpdatePassword" method="post" action="{% url 'change_password' %}">
+            {% csrf_token %}
+
+            <div class="row g-3">
+
+              <div class="col-12">
+                <label for="idTitleLabel" class="form-label fw-semibold">Senha Atual:</label>
+                <input type="password" class="form-control form-control-lg" name="old_password" required/>
+              </div>
+
+              <div class="col-12">
+                <label for="idTitleLabel" class="form-label fw-semibold">Nova Senha:</label>
+                <input type="password" class="form-control form-control-lg" name="new_password1" required/>
+              </div>
+
+              <div class="col-12">
+                <label for="idTitleLabel" class="form-label fw-semibold">Confirmar Nova Senha:</label>
+                <input type="password" class="form-control form-control-lg" name="new_password2" required/>
+              </div>
+
+            </div>
+
+            <div class="modal-footer px-0 pb-0 pt-4 border-top-0">
+              <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn px-4" style="background-color: #028cc7; color: white">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function getAddress() {
+      const idCep = document.getElementById('idCep')
+      console.log(idCep)
+      const cep = idCep.value.replace(/\D/g, '')
+    
+      if (!cep || cep.length !== 8) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Por favor, insira um CEP válido.',
+          confirmButtonColor: '#028cc7',
+        })
+        return
+      }
+    
+      fetch(`/profiles/address/?cep=${cep}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Erro ao buscar dados do CEP. Status: ${response.status}`)
+          }
+          return response.json()
+        })
+        .then((data) => {
+          if (data.address) {
+            document.getElementById('idlogradouro').value = data.address.address || ''
+            document.getElementById('idBairro').value = data.address.district || ''
+            document.getElementById('idcidade').value = data.address.city || ''
+            document.getElementById('idUf').value = data.address.uf || ''
+    
+            const numeroEnderecoField = document.getElementById('idNumero')
+            numeroEnderecoField.placeholder = 'Por favor, digite o número'
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'CEP não encontrado.',
+              confirmButtonColor: '#028cc7',
+            })
+            window.location.reload()
+          }
+        })
+        .catch((error) => {
+          console.error('Erro ao buscar CEP:', error.message)
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Erro ao buscar CEP. Por favor, tente novamente.',
+            confirmButtonColor: '#028cc7',
+          })
+          window.location.reload()
+        })
+    }
+
+    function openModalPersonalInformation(data) {
+      let formPersonalInformation = document.getElementById('formPersonalInformation');
+      formPersonalInformation.action = `/profiles/user/${data.user_id}/update/`
+
+      document.getElementById('idFirstName').value = data.first_name
+      document.getElementById('idLastName').value = data.last_name
+      document.getElementById('idEmail').value = data.email
+      
+      const modalPersonalInformation = new bootstrap.Modal(document.getElementById('modalPersonalInformation'));
+        modalPersonalInformation.show();
+
+    }
+  </script>
+{% endblock %}
