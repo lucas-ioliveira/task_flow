@@ -1,0 +1,5 @@
+/* Estilo da logo na tela de login */
+.login-logo img {
+    max-height: 200px;
+    width: auto;
+}
