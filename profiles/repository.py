@@ -1,7 +1,17 @@
+from django.contrib.auth.models import User
 from profiles.models import ContactDetails
 
 
 class ProfileRepository:
+
+    @staticmethod
+    def get_user_by_id(id):
+        try:
+            user = User.objects.get(id=id)
+            return user
+        except User.DoesNotExist:
+            return None
+
     @staticmethod
     def get_contact_details(user):
         try:
@@ -49,4 +59,19 @@ class ProfileRepository:
             contact_details.save()
             return contact_details
         except ContactDetails.DoesNotExist:
+            return None
+    
+    @staticmethod
+    def update_user(user_id, first_name, last_name, email):
+        try:
+            user = ProfileRepository.get_user_by_id(user_id)
+            if not user:
+                return None
+            
+            user.first_name = first_name
+            user.last_name = last_name
+            user.email = email
+            user.save()
+            return user
+        except User.DoesNotExist:
             return None
