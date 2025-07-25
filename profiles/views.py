@@ -57,3 +57,22 @@ class AddressUpdateView(View):
             return redirect(previous_page)
         messages.success(request, 'Endereço atualizado com sucesso!')
         return redirect(previous_page)
+
+
+class UserUpdateView(View):
+    def post(self, request, pk):
+        previous_page = request.META.get("HTTP_REFERER")
+        data = {
+            'user_id': pk,
+            'first_name': request.POST.get('first_name'),
+            'last_name': request.POST.get('last_name'),
+            'email': request.POST.get('email')
+        }
+
+        user_updated = ProfileService.update_user(data)
+        if not user_updated:
+            messages.error(request, 'Ocorreu um erro ao atualizar o usuário.')
+            return redirect(previous_page)
+
+        messages.success(request, 'Usuário atualizado com sucesso.')
+        return redirect(previous_page)

@@ -4,6 +4,7 @@ from profiles.repository import ProfileRepository
 
 
 class ProfileService:
+
     @staticmethod
     def get_address(request):
         try:
@@ -42,3 +43,16 @@ class ProfileService:
             return ProfileRepository.update_address(user, phone, cep, address, number_address, district, city, state, complement)
         except:
             return None
+    
+    @staticmethod
+    def update_user(data):
+        user = ProfileRepository.get_user_by_id(data.get('user_id'))
+        if not user:
+            return None
+
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        email = data.get('email')
+
+        user_updated = ProfileRepository.update_user(user.id, first_name, last_name, email)
+        return user_updated
