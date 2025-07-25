@@ -39,9 +39,9 @@ jobs:
 
       - name: Configurar variáveis de ambiente
         run: |
-          echo "DEBUG=False" >> .env
-          echo "SECRET_KEY=supersecreta" >> .env
-          echo "ALLOWED_HOSTS=127.0.0.1" >> .env
+          echo "DEBUG=${{ secrets.DEBUG }}" >> .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
 
       - name: Baixar e Instalar Docker Compose
         run: |
