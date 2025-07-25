@@ -11,6 +11,8 @@
   .hover-lift-lg { transition: transform 0.3s ease-out, box-shadow 0.3s ease-out; }
 
   .hover-lift-lg:hover { transform: translateY(-8px); box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.2); }
+
+  .swal2-actions { display: flex; gap: 10px; justify-content: center; }
 {% endblock %}
 
 {% block main %}
@@ -163,7 +165,7 @@
 
             <div class="modal-footer px-0 pb-0 pt-4 border-top-0">
               <button type="button" class="btn btn-outline-secondary px-4 me-2" data-bs-dismiss="modal">Cancelar</button>
-              <button type="submit" class="btn btn-primary px-4">Salvar</button>
+              <button type="submit" class="btn px-4" style="background-color: #028cc7; color: white;">Salvar</button>
             </div>
           </form>
         </div>
@@ -189,13 +191,11 @@
             text: "Você realmente deseja excluir este espaço de trabalho?",
             icon: 'warning',
             showCancelButton: true,
+            confirmButtonColor: '#028cc7',
+            cancelButtonColor: 'red',
             confirmButtonText: 'Sim, excluir!',
             cancelButtonText: 'Cancelar',
-            customClass: {
-                confirmButton: 'btn btn-danger order-2',
-                cancelButton: 'btn btn-secondary order-1 me-2'
-            },
-            buttonsStyling: false
+            buttonsStyling: true
         }).then((result) => {
             if (result.isConfirmed) {
                 const form = event.target.closest('form');
