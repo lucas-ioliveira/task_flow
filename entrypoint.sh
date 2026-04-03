@@ -12,4 +12,4 @@ python manage.py migrate
 sleep 5
 
 echo "Iniciando o servidor Django"
-python manage.py runserver 0:8003
+python manage.py runserver 0:8001
