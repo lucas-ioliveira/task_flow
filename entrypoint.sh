@@ -1,15 +1,13 @@
 #!/bin/bash
 
-echo "Aguardando o banco de bados..."
+set -e
+
+echo "Aguardando o banco de dados..."
 sleep 5
 
-echo "Verificando migrações para o banco de bados..."
-python manage.py migrate
-sleep 5
+echo "Aplicando migrações..."
+python manage.py migrate --noinput
 
-echo "Aplicando migrações para o banco de bados..."
-python manage.py migrate
-sleep 5
+echo "Iniciando o processo principal..."
 
-echo "Iniciando o servidor Django"
-python manage.py runserver 0:8001
+exec "$@"
