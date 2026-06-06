@@ -1,18 +1,22 @@
+from django.db.models import Count
+
 from tasks.models import Task
 
 
 class TaskRepository:
     @staticmethod
     def get_tasks_by_status(work_space_id=None, user=None, status=None):
-        try:
-            if work_space_id:
-                return Task.objects.filter(
-                    work_space_id=work_space_id, user=user, active=True, status=status
-                    ).order_by('created_at')
+        filters = {
+            'user': user,
+            'active': True,
+            'status': status,
+            'work_space__active': True
+        }
 
-            return Task.objects.filter(user=user, active=True, status=status).order_by('created_at')
-        except Task.DoesNotExist:
-            return None
+        if work_space_id:
+            filters['work_space_id'] = work_space_id
+
+        return Task.objects.filter(**filters).order_by('created_at')
         
     @staticmethod
     def get_status_choices():
@@ -73,3 +77,20 @@ class TaskRepository:
             return task
         except Task.DoesNotExist:
             return None
+    
+    @staticmethod
+    def get_tasks_grouped_by_priority(user):
+        return Task.objects.filter(
+            user=user,
+            active=True,
+            work_space__active=True
+        ).exclude(status='Done').values('priority').annotate(total=Count('id')).order_by('-total')
+
+    @staticmethod
+    def get_tasks_grouped_by_workspace(user):
+        """Retorna a contagem de tarefas por Workspace"""
+        return Task.objects.filter(
+            user=user,
+            active=True,
+            work_space__active=True
+        ).values('work_space__title').annotate(total=Count('id')).order_by('-total')

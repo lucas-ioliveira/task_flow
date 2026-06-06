@@ -87,6 +87,26 @@
           </button>
         </div>
       </div>
+
+      <div class="row mt-5">
+          <div class="col-lg-4 mb-4">
+              <div class="card border-0 shadow-sm h-100 p-4">
+                  <h5 class="card-title text-center text-secondary mb-4">Tarefas por Prioridade</h5>
+                  <div style="position: relative; height: 300px; width: 100%;">
+                      <canvas id="priorityChart"></canvas>
+                  </div>
+              </div>
+          </div>
+
+          <div class="col-lg-8 mb-4">
+              <div class="card border-0 shadow-sm h-100 p-4">
+                  <h5 class="card-title text-center text-secondary mb-4">Tarefas por Espaço de Trabalho</h5>
+                  <div style="position: relative; height: 300px; width: 100%;">
+                      <canvas id="workspaceChart"></canvas>
+                  </div>
+              </div>
+          </div>
+      </div>
     </div>
   </main>
 
@@ -142,6 +162,8 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <script>
     function editarWorkSpace(work_space_id) {
         const formEditarWorkSpace = document.getElementById('formEditarWorkSpace');
@@ -174,4 +196,65 @@
         });
     }
   </script>
+
+  <script>
+    const priorityLabels = {{ priority_labels|safe }};
+    const priorityValues = {{ priority_values|safe }};
+
+    const workspaceLabels = {{ workspace_labels|safe }};
+    const workspaceValues = {{ workspace_values|safe }};
+
+    const ctxPriority = document.getElementById('priorityChart').getContext('2d');
+    new Chart(ctxPriority, {
+        type: 'doughnut',
+        data: {
+            labels: priorityLabels,
+            datasets: [{
+                data: priorityValues,
+                backgroundColor: ['#EF4444', '#F97316', '#3B82F6', '#10B981', '#8B5CF6'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+
+    const ctxWorkspace = document.getElementById('workspaceChart').getContext('2d');
+    new Chart(ctxWorkspace, {
+        type: 'bar',
+        data: {
+            labels: workspaceLabels,
+            datasets: [{
+                label: 'Quantidade de Tarefas Ativas',
+                data: workspaceValues,
+                backgroundColor: '#028cc7',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+</script>
 {% endblock %}
