@@ -53,22 +53,22 @@
                     <div class="card-body">
                       <div class="text-right mb-3">
                         {% if task.priority == 'Low' %}
-                          <span class="badge bg-secondary text-white mb-2">
+                          <span class="badge bg-success text-white mb-2">
                             Baixa
                           </span>
-                          {% elif task.priority == 'Medium' %}
-                            <span class="badge bg-secondary text-white mb-2">
-                              Media
-                            </span>
-                          {% elif task.priority == 'High' %}
-                            <span class="badge bg-secondary text-white mb-2">
-                              Alta
-                            </span>
-                          {% elif task.priority == 'Urgent' %}
-                            <span class="badge bg-secondary text-white mb-2">
-                              Urgente
-                            </span>
-                          {% endif %}
+                        {% elif task.priority == 'Medium' %}
+                          <span class="badge bg-primary text-white mb-2">
+                            Media
+                          </span>
+                        {% elif task.priority == 'High' %}
+                          <span class="badge bg-warning text-white mb-2">
+                            Alta
+                          </span>
+                        {% elif task.priority == 'Urgent' %}
+                          <span class="badge bg-danger text-white mb-2">
+                            Urgente
+                          </span>
+                        {% endif %}
                       </div>
                       <p class="mb-5">{{ task.title }}</p>
                       <hr class="mb-3">
@@ -145,23 +145,22 @@
                     <div class="card-body">
                       <div class="text-right mb-3">
                         {% if task.priority == 'Low' %}
-                          <span class="badge bg-secondary text-white mb-2">
+                          <span class="badge bg-success text-white mb-2">
                             Baixa
                           </span>
-                          {% elif task.priority == 'Medium' %}
-                            <span class="badge bg-secondary text-white mb-2">
-                              Media
-                            </span>
-                          {% elif task.priority == 'High' %}
-                            <span class="badge bg-secondary text-white mb-2">
-                              Alta
-                            </span>
-                          {% elif task.priority == 'Urgent' %}
-                            <span class="badge bg-secondary text-white mb-2">
-                              Urgente
-                            </span>
-                          {% endif %}
-                        
+                        {% elif task.priority == 'Medium' %}
+                          <span class="badge bg-primary text-white mb-2">
+                            Media
+                          </span>
+                        {% elif task.priority == 'High' %}
+                          <span class="badge bg-warning text-white mb-2">
+                            Alta
+                          </span>
+                        {% elif task.priority == 'Urgent' %}
+                          <span class="badge bg-danger text-white mb-2">
+                            Urgente
+                          </span>
+                        {% endif %}
                       </div>
                       <p class="mb-5">{{ task.title }}</p>
                       <hr class="mb-3">
@@ -236,23 +235,23 @@
                   <div class="card mb-3">
                     <div class="card-body">
                       <div class="text-right mb-3">
-                        {% if task.priority == 'Low' %}
-                          <span class="badge bg-secondary text-white mb-2">
+                       {% if task.priority == 'Low' %}
+                          <span class="badge bg-success text-white mb-2">
                             Baixa
                           </span>
-                          {% elif task.priority == 'Medium' %}
-                            <span class="badge bg-secondary text-white mb-2">
-                              Media
-                            </span>
-                          {% elif task.priority == 'High' %}
-                            <span class="badge bg-secondary text-white mb-2">
-                              Alta
-                            </span>
-                          {% elif task.priority == 'Urgent' %}
-                            <span class="badge bg-secondary text-white mb-2">
-                              Urgente
-                            </span>
-                          {% endif %}
+                        {% elif task.priority == 'Medium' %}
+                          <span class="badge bg-primary text-white mb-2">
+                            Media
+                          </span>
+                        {% elif task.priority == 'High' %}
+                          <span class="badge bg-warning text-white mb-2">
+                            Alta
+                          </span>
+                        {% elif task.priority == 'Urgent' %}
+                          <span class="badge bg-danger text-white mb-2">
+                            Urgente
+                          </span>
+                        {% endif %}
                       </div>
                       <p class="mb-5">{{ task.title }}</p>
                       <hr class="mb-3">
@@ -328,22 +327,22 @@
                     <div class="card-body">
                       <div class="text-right mb-3">
                         {% if task.priority == 'Low' %}
-                          <span class="badge bg-secondary text-white mb-2">
+                          <span class="badge bg-success text-white mb-2">
                             Baixa
                           </span>
-                          {% elif task.priority == 'Medium' %}
-                            <span class="badge bg-secondary text-white mb-2">
-                              Media
-                            </span>
-                          {% elif task.priority == 'High' %}
-                            <span class="badge bg-secondary text-white mb-2">
-                              Alta
-                            </span>
-                          {% elif task.priority == 'Urgent' %}
-                            <span class="badge bg-secondary text-white mb-2">
-                              Urgente
-                            </span>
-                          {% endif %}
+                        {% elif task.priority == 'Medium' %}
+                          <span class="badge bg-primary text-white mb-2">
+                            Media
+                          </span>
+                        {% elif task.priority == 'High' %}
+                          <span class="badge bg-warning text-white mb-2">
+                            Alta
+                          </span>
+                        {% elif task.priority == 'Urgent' %}
+                          <span class="badge bg-danger text-white mb-2">
+                            Urgente
+                          </span>
+                        {% endif %}
                       </div>
                       <p class="mb-5">{{ task.title }}</p>
                       <hr class="mb-3">
@@ -484,7 +483,7 @@
               </div>
               <div class="col-md-6">
                   <p class="mb-1 fw-semibold">Status:</p>
-                  <span id="idStatusDetail" class="badge bg-secondary p-2 rounded-pill"></span>
+                  <span id="idStatusDetail" class="badge bg-primary p-2 rounded-pill"></span>
               </div>
           </div>
 
@@ -596,44 +595,58 @@
 
   <script>
     function detalhesTask(data) {
-      console.log(data);
       document.getElementById("idTitleDetail").innerHTML = data.title;
       document.getElementById("idDescriptionDetail").innerHTML = data.description;
       document.getElementById("idWorkSpaceDetail").innerHTML = data.workSpaceTitle;
       document.getElementById("idDateDetail").innerHTML = data.completedAt;
       document.getElementById("idCreatedDetail").innerHTML = data.createdAt;
-      document.getElementById("idPriorityDetail").innerHTML = data.priority;
 
-      if (data.priority == 'Low') {
-        document.getElementById("idPriorityDetail").innerHTML = 'Baixa'
+      const priorityBadge = document.getElementById("idPriorityDetail");
+      
+      priorityBadge.className = 'badge p-2 rounded-pill';
 
-      } else if (data.priority == 'Medium') {
-        document.getElementById("idPriorityDetail").innerHTML = 'Média'
-      
-      } else if (data.priority == 'High') {
-        document.getElementById("idPriorityDetail").innerHTML = 'Alta'
-      
-      } else if (data.priority == 'Urgent') {
-        document.getElementById("idPriorityDetail").innerHTML = 'Urgente'
+      if (data.priority === 'Low') {
+        priorityBadge.innerHTML = 'Baixa';
+        priorityBadge.classList.add('bg-success');
+        
+      } else if (data.priority === 'Medium') {
+        priorityBadge.innerHTML = 'Média';
+        priorityBadge.classList.add('bg-primary');
+        
+      } else if (data.priority === 'High') {
+        priorityBadge.innerHTML = 'Alta';
+        priorityBadge.classList.add('bg-warning', 'text-dark');
+        
+      } else if (data.priority === 'Urgent') {
+        priorityBadge.innerHTML = 'Urgente';
+        priorityBadge.classList.add('bg-danger');
         
       } else {
-        document.getElementById("idPriorityDetail").innerHTML = 'Desconhecido'
+        priorityBadge.innerHTML = 'Desconhecido';
+        priorityBadge.classList.add('bg-secondary');
       }
 
-      if (data.status == 'To do') {
-        document.getElementById("idStatusDetail").innerHTML = 'À fazer'
+      const statusBadge = document.getElementById("idStatusDetail");
 
-      } else if (data.status == 'In progress') {
-        document.getElementById("idStatusDetail").innerHTML = 'Em andamento'
+      if (data.status === 'To do') {
+        statusBadge.innerHTML = 'À fazer';
+        statusBadge.classList.add('bg-primary');
+
+      } else if (data.status === 'In progress') {
+        statusBadge.innerHTML = 'Em andamento';
+        statusBadge.classList.add('bg-warning', 'text-dark');
       
-      } else if (data.status == 'Done') {
-        document.getElementById("idStatusDetail").innerHTML = 'Concluído'
+      } else if (data.status === 'Done') {
+        statusBadge.innerHTML = 'Concluído';
+        statusBadge.classList.add('bg-success');
       
-      } else if (data.status == 'Paused') {
-        document.getElementById("idStatusDetail").innerHTML = 'Pausado'
+      } else if (data.status === 'Paused') {
+        statusBadge.innerHTML = 'Pausado';
+        statusBadge.classList.add('bg-danger');
         
       } else {
-        document.getElementById("idStatusDetail").innerHTML = 'Desconhecido'
+        statusBadge.innerHTML = 'Desconhecido';
+        statusBadge.classList.add('bg-secondary');
       }
 
       const modalElement = document.getElementById("modalDetailTask");
